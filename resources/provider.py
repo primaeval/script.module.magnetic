@@ -663,7 +663,7 @@ def generate_payload(generator=None, read_magnet_link=False):
                 break
         else:
             log.warning(Filtering.reason)
-    log.info('>>>>>>' + str(cont) + ' torrents sent to Quasar<<<<<<<')
+    log.info('>>>>>>' + str(cont) + ' torrents sent to Magnetic<<<<<<<')
     return results
 
 
