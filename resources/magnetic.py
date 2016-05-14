@@ -12,7 +12,7 @@ from utils import get_icon_path, Magnet, size_int
 
 # provider service config
 PROVIDER_SERVICE_HOST = "localhost"
-PROVIDER_SERVICE_PORT = 5015
+PROVIDER_SERVICE_PORT = 65015
 
 provider_results = []
 available_providers = 0
