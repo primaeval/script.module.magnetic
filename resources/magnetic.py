@@ -58,7 +58,9 @@ def get_results(self):
 
     if operation == "general":
         method = "search"
-        payload = urlparse.parse_qs(parsed.query)['title'][0]
+        title = urlparse.parse_qs(parsed.query)['title'][0]
+        general_item = {'title': unquote_plus(str(title).replace("'", ""))}
+        payload = json.dumps(general_item)
 
     elif operation == "movie":
         method = "search_movie"
