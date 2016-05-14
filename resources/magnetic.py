@@ -50,9 +50,7 @@ def get_results(self):
 
     # request data
     parsed = urlparse.urlparse(self.path)
-    print "**********parsed.query"
-    print parsed.query
-    print "*********************"
+
     if 'search=' not in parsed.query:
         return []
 
