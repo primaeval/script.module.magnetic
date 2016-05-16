@@ -1,18 +1,20 @@
+import json
 import os
 import time
 import urlparse
-import futures
-import json
+from threading import Thread
+from urllib import quote_plus, unquote_plus
+
 import xbmc
+
 import filtering
 import logger
-from utils import notify, get_setting, ADDON_NAME
-from urllib import quote_plus, unquote_plus
 from utils import get_icon_path, Magnet, size_int
+from utils import notify, get_setting, ADDON_NAME
 
 # provider service config
 PROVIDER_SERVICE_HOST = "localhost"
-PROVIDER_SERVICE_PORT = 65015
+PROVIDER_SERVICE_PORT = 5005
 
 provider_results = []
 available_providers = 0
@@ -27,7 +29,7 @@ def process_provider(self):
     addonid = urlparse.parse_qs(parsed.query)['addonid'][0]
     content_length = int(self.headers['Content-Length'])
     post_data = self.rfile.read(content_length)
-    self._writeheaders()
+    self._write_headers()
     self.wfile.write("OK")
     data = json.loads(post_data)
     logger.log.info("Provider " + addonid + " returned " + str(len(data)) + " results in " + str(
@@ -66,8 +68,8 @@ def get_results(self):
         method = "search_movie"
         title = urlparse.parse_qs(parsed.query)['title'][0]
         year = urlparse.parse_qs(parsed.query)['year'][0]
-        imdbid = urlparse.parse_qs(parsed.query)['imdb'][0]
-        movie_item = {'imdb_id': str(imdbid), 'title': unquote_plus(str(title).replace("'", "")), 'year': str(year)}
+        imdb_id = urlparse.parse_qs(parsed.query)['imdb'][0]
+        movie_item = {'imdb_id': str(imdb_id), 'title': unquote_plus(str(title).replace("'", "")), 'year': str(year)}
         payload = json.dumps(movie_item)
 
     elif operation == "episode":
@@ -97,7 +99,7 @@ def get_results(self):
 
 
 # search for torrents - call providers
-def search(method, payloadjson):
+def search(method, payload_json):
     global provider_results
     global available_providers
     global request_time
@@ -111,6 +113,8 @@ def search(method, payloadjson):
     for addon in addons:
         if ("script.%s." % ADDON_NAME.lower()) in addon:
             available_providers += 1
+            task = Thread(target=run_provider, args=(addon, method, payload_json))
+            task.start()
             magnetic_addons.append(addon)
 
     # return empty list
@@ -120,16 +124,9 @@ def search(method, payloadjson):
         empty_list = {'results': 0, 'time': "0 seconds"}
         return empty_list
 
-    with futures.ThreadPoolExecutor(max_workers=available_providers) as executor:
-        # start the load operations and mark each future with its URL
-        future_to_addon = {executor.submit(run_provider, addon, method, payloadjson): addon for addon in
-                           magnetic_addons}
-        for future in futures.as_completed(future_to_addon):
-            url = future_to_addon[future]
-
     providers_time = time.clock()
     # while all providers have not returned results or timeout not reached
-    while (time.clock() - providers_time) < (int(get_setting("provider_timeout")) or 30):
+    while (time.clock() - providers_time) < (int(get_setting("provider_timeout")) or 60):
         # if all providers have returned results exit
         if available_providers == 0:
             break
@@ -142,8 +139,7 @@ def search(method, payloadjson):
     normalized_list = cleanup_results(provider_results)
 
     # filter magnets and append to results
-    filtered_results = {}
-    filtered_results['magnets'] = filtering.apply(normalized_list)
+    filtered_results = dict(magnets=filtering.apply_filters(normalized_list))
 
     # append number and time on payload
     filtered_results['results'] = len(filtered_results['magnets'])
@@ -152,10 +148,10 @@ def search(method, payloadjson):
 
 
 # run provider script
-def run_provider(addon, method, searchquery):
+def run_provider(addon, method, search_query):
     logger.log.info("Processing:" + addon)
     xbmc.executebuiltin(
-        "RunScript(" + addon + "," + addon + "," + method + "," + quote_plus(searchquery.encode('utf-8')) + ")", True)
+        "RunScript(" + addon + "," + addon + "," + method + "," + quote_plus(search_query.encode('utf-8')) + ")", True)
 
 
 # remove dupes and sort by seeds
@@ -166,6 +162,7 @@ def cleanup_results(results_list):
 
     filtered_list = []
     for result in results_list:
+        # noinspection PyBroadException
         try:
             # check provider returns seeds
             int(result['seeds'])
@@ -191,4 +188,4 @@ def cleanup_results(results_list):
             logger.log.info("Failed to parse:" + str(result))
             pass
 
-    return sorted(filtered_list, key=lambda result: (float(result['seeds'])), reverse=True)
+    return sorted(filtered_list, key=lambda r: (float(r['seeds'])), reverse=True)

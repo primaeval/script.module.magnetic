@@ -11,7 +11,6 @@ from os import path
 from urllib import unquote_plus, urlencode, quote
 
 import xbmcaddon
-import xbmcgui
 
 from ehp import *
 from logger import log
@@ -134,22 +133,27 @@ def get_setting(key, converter=str, choices=None):
                         ' or tuple.')
 
 
+# noinspection PyPep8Naming
 def HEAD(*args, **kwargs):
     return request(*args, method="HEAD", **kwargs)
 
 
+# noinspection PyPep8Naming
 def GET(*args, **kwargs):
     return request(*args, method="GET", **kwargs)
 
 
+# noinspection PyPep8Naming
 def POST(*args, **kwargs):
     return request(*args, method="POST", **kwargs)
 
 
+# noinspection PyPep8Naming
 def PUT(*args, **kwargs):
     return request(*args, method="PUT", **kwargs)
 
 
+# noinspection PyPep8Naming
 def DELETE(*args, **kwargs):
     return request(*args, method="DELETE", **kwargs)
 

@@ -55,24 +55,6 @@ class Magnet:
         self.trackers = re.findall('tr=(.*?)&', self.magnet)
 
 
-def ignore_exception(IgnoreException=Exception, DefaultVal=0):
-    """ Decorator for ignoring exception from a function
-    e.g.   @ignore_exception(DivideByZero)
-    e.g.2. ignore_exception(DivideByZero)(Divide)(2/0)
-    """
-
-    def dec(function):
-        def _dec(*args, **kwargs):
-            try:
-                return function(*args, **kwargs)
-            except IgnoreException:
-                return DefaultVal
-
-        return _dec
-
-    return dec
-
-
 def get_int(text):
     # noinspection PyBroadException
     try:
@@ -82,22 +64,21 @@ def get_int(text):
     return value
 
 
+# noinspection PyBroadException
 def size_int(size_txt):
     try:
-        return int(result['size'])
+        return int(size_txt)
     except:
-        sint = ignore_exception(ValueError)(int)
-        sfloat = ignore_exception(ValueError)(float)
         size_txt = size_txt.upper()
         size1 = size_txt.replace('B', '').replace('I', '').replace('K', '').replace('M', '').replace('G', '')
-        size = sfloat(size1)
+        size = get_float(size1)
         if 'K' in size_txt:
             size *= 1000
         if 'M' in size_txt:
             size *= 1000000
         if 'G' in size_txt:
             size *= 1e9
-        return sint(size)
+        return get_int(size)
 
 
 def get_float(text):
