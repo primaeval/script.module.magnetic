@@ -1,17 +1,56 @@
 import logger
 from utils import get_setting
+from utils import size_int, Magnet
 
 GIGABYTE = 1073741824
 
 
 # filter results
 def apply_filters(results_list):
+    return results_list
     filtered_quality_results = filter_quality(results_list)
     filtered_size_results = filter_size(filtered_quality_results)
     if get_setting("quality_sort", bool):
         return sort_by_quality(filtered_size_results)
     else:
         return filtered_size_results
+
+
+# remove dupes and sort by seeds
+def cleanup_results(results_list):
+    # nothing found
+    if len(results_list) == 0:
+        return []
+
+    filtered_list = []
+    for result in results_list:
+        # noinspection PyBroadException
+        try:
+            # check provider returns seeds
+            int(result['seeds'])
+
+            # size to bytes
+            result['size'] = size_int(result['size'])
+
+            # append size label
+            if int(result['size']) < 1073741824:
+                result['size_label'] = (str(int(result['size'] / 1024 / 1024)) + 'MB')
+            else:
+                result['size_label'] = (str("%.2f" % (float(result['size']) / 1024 / 1024 / 1024)) + 'GB')
+
+            # append hash
+            result['hash'] = Magnet(result['uri']).info_hash.upper()
+
+            # remove dupes
+            if len([item for item in filtered_list if item['hash'].upper() == result['hash'].upper()]) == 0:
+                # append item to results
+                filtered_list.append(result)
+
+        except:
+            logger.log.info("Failed to parse:" + str(result))
+            pass
+
+    return sorted(filtered_list, key=lambda r: (float(r['seeds'])), reverse=True)
 
 
 # apply size filters

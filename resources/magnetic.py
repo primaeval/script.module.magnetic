@@ -9,7 +9,7 @@ import xbmc
 
 import filtering
 import logger
-from utils import get_icon_path, Magnet, size_int
+from utils import get_icon_path
 from utils import notify, get_setting, ADDON_NAME
 
 # provider service config
@@ -40,7 +40,6 @@ def process_provider(self):
         else:
             for item in data:
                 provider_results.append(item)
-
     available_providers -= 1
 
 
@@ -135,11 +134,8 @@ def search(method, payload_json):
         pass
     logger.log.info("Providers search returned: " + str(len(provider_results)) + " results")
 
-    # sort and remove dupes
-    normalized_list = cleanup_results(provider_results)
-
     # filter magnets and append to results
-    filtered_results = dict(magnets=filtering.apply_filters(normalized_list))
+    filtered_results = dict(magnets=filtering.apply_filters(provider_results))
 
     # append number and time on payload
     filtered_results['results'] = len(filtered_results['magnets'])
@@ -152,40 +148,3 @@ def run_provider(addon, method, search_query):
     logger.log.info("Processing:" + addon)
     xbmc.executebuiltin(
         "RunScript(" + addon + "," + addon + "," + method + "," + quote_plus(search_query.encode('utf-8')) + ")", True)
-
-
-# remove dupes and sort by seeds
-def cleanup_results(results_list):
-    # nothing found
-    if len(results_list) == 0:
-        return []
-
-    filtered_list = []
-    for result in results_list:
-        # noinspection PyBroadException
-        try:
-            # check provider returns seeds
-            int(result['seeds'])
-
-            # size to bytes
-            result['size'] = size_int(result['size'])
-
-            # append size label
-            if int(result['size']) < 1073741824:
-                result['size_label'] = (str(int(result['size'] / 1024 / 1024)) + 'MB')
-            else:
-                result['size_label'] = (str("%.2f" % (float(result['size']) / 1024 / 1024 / 1024)) + 'GB')
-
-            # append hash
-            result['hash'] = Magnet(result['uri']).info_hash.upper()
-
-            # remove dupes
-            if len([item for item in filtered_list if item['hash'].upper() == result['hash'].upper()]) == 0:
-                # append item to results
-                filtered_list.append(result)
-
-        except:
-            logger.log.info("Failed to parse:" + str(result))
-            pass
-
-    return sorted(filtered_list, key=lambda r: (float(r['seeds'])), reverse=True)
