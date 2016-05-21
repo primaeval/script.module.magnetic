@@ -9,6 +9,7 @@ import urllib2
 from cookielib import CookieJar, LWPCookieJar
 from os import path
 from urllib import unquote_plus, urlencode, quote
+from urlparse import urlparse
 
 import xbmcaddon
 
@@ -22,16 +23,6 @@ USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36"
 Html()
 COOKIES = CookieJar()
 urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(COOKIES)))
-
-season_names = {'en': 'season',
-                'es': 'temporada',
-                'fr': 'saison',
-                'nl': 'seizoen',
-                'ru': 'сезон',
-                'it': 'stagione',
-                'de': 'saison',
-                'pt': 'temporada',
-                }
 
 
 # noinspection PyBroadException
@@ -280,7 +271,7 @@ def get_links(page):
         result = ''
     else:
         if page[:1] is '/':
-            page = Settings.value["url_address"] + page
+            page = Settings.url + page
         browser = Browser()
         result = ""
         if browser.open(quote(page).replace("%3A", ":")):
@@ -333,16 +324,37 @@ def exception(title):
     return title
 
 
+def read_keywords(keywords):
+    results = []
+    for value in re.findall('{(.*?)}', keywords):
+        results.append(value)
+    return results
+
+
+def format_decimal(times):
+    value = ''
+    for i in range(1, times):
+        value += '0'
+    return "%" + value + "%sd" % times
+
+
 # read provider xbmcaddon.Addon()
 class MetaSettings(type):
     @classmethod
     def __getitem__(mcs, item):
         if item is "max_magnets":
-            return int(mcs.value.get(item, "10"))
-        elif item is "language":
-            return mcs.value.get(item, "en")
-        elif item is "episodes":
-            return mcs.value.get("episodes", "false")
+            return get_int(mcs.value.get(item, "10"))
+        elif item is "separator":
+            return mcs.value.get(item, "%20")
+        elif item is "time_noti":
+            return get_int(mcs.value.get(item, "750"))
+        elif item.endswith("accept"):
+            temp = mcs.value.get(item, "{*}")
+            return "{*}" if temp is "" else temp
+        elif item.endswith("max_size"):
+            return get_float(mcs.value.get(item, "10"))
+        elif item.endswith("min_size"):
+            return get_float(mcs.value.get(item, "0"))
         else:
             return mcs.value.get(item, "")
 
@@ -352,7 +364,7 @@ class MetaSettings(type):
     fanart = xbmcaddon.Addon().getAddonInfo('fanart')
     path_folder = xbmcaddon.Addon().getAddonInfo('path')
     name = xbmcaddon.Addon().getAddonInfo('name')  # gets name
-    cleanName = re.sub('.COLOR (.*?)]', '', name.replace('[/COLOR]', ''))
+    name_provider = re.sub('.COLOR (.*?)]', '', name.replace('[/COLOR]', ''))
     value = {}  # it contains all the settings from xml file
     fileName = path.join(path_folder, "resources", "settings.xml")
     if path.isfile(fileName):
@@ -360,8 +372,8 @@ class MetaSettings(type):
             data = fp.read()
         for key in re.findall('id="(\w+)"', data):
             value[key] = get_setting(key)  # reading the values from xbmcaddon.Addon().xml
-        if 'url_address' in value and value['url_address'].endswith('/'):
-            value['url_address'] = value['url_address'][:-1]
+    temp = urlparse(value.get('general_url', ""))
+    url = '%s://%s' % (temp.scheme, temp.netloc)
 
 
 class Settings(object):
@@ -377,152 +389,98 @@ class Filtering:
     def __init__(self):
         pass
 
-    id_addon = xbmcaddon.Addon().getAddonInfo('id')  # gets name
-    time_noti = xbmcaddon.Addon().getSetting('time_noti')
-    time_noti = int(time_noti) if time_noti is not '' else 1500  # time notification
-    icon = xbmcaddon.Addon().getAddonInfo('icon')
-    name_provider = re.sub('.COLOR (.*?)]', '', xbmcaddon.Addon().getAddonInfo('name').replace('[/COLOR]', ''))
+    info = dict(title="")
+    payload = {}
     reason = ''
     title = ''
-    items = []
     results = []
-    type = "general"
-    quality_allow = ['*']
-    quality_deny = []
-    max_size = 10.00  # 10 it is not limit
-    min_size = 0.00
-    # size
-    if xbmcaddon.Addon().getSetting('movie_min_size') == '':
-        movie_min_size = 0.0
-    else:
-        movie_min_size = float(xbmcaddon.Addon().getSetting('movie_min_size'))
-    if xbmcaddon.Addon().getSetting('movie_max_size') == '':
-        movie_max_size = 10.0
-    else:
-        movie_max_size = float(xbmcaddon.Addon().getSetting('movie_max_size'))
-    if xbmcaddon.Addon().getSetting('TV_min_size') == '':
-        TV_min_size = 0.0
-    else:
-        TV_min_size = float(xbmcaddon.Addon().getSetting('TV_min_size'))
-    if xbmcaddon.Addon().getSetting('TV_max_size') == '':
-        TV_max_size = 10.0
-    else:
-        TV_max_size = float(xbmcaddon.Addon().getSetting('TV_max_size'))
-
-    # movie
-    movie_qua1 = xbmcaddon.Addon().getSetting('movie_qua1')  # 480p
-    movie_qua2 = xbmcaddon.Addon().getSetting('movie_qua2')  # HDTV
-    movie_qua3 = xbmcaddon.Addon().getSetting('movie_qua3')  # 720p
-    movie_qua4 = xbmcaddon.Addon().getSetting('movie_qua4')  # 1080p
-    movie_qua5 = xbmcaddon.Addon().getSetting('movie_qua5')  # 3D
-    movie_qua6 = xbmcaddon.Addon().getSetting('movie_qua6')  # CAM
-    movie_qua7 = xbmcaddon.Addon().getSetting('movie_qua7')  # TeleSync
-    movie_qua8 = xbmcaddon.Addon().getSetting('movie_qua8')  # Trailer
-    # Accept File
-    movie_key_allowed = xbmcaddon.Addon().getSetting('movie_key_allowed').replace(', ', ',').replace(' ,', ',')
-    movie_allow = re.split(',', movie_key_allowed)
-    if movie_qua1 == 'Accept File':
-        movie_allow.append('480p')
-    if movie_qua2 == 'Accept File':
-        movie_allow.append('HDTV')
-    if movie_qua3 == 'Accept File':
-        movie_allow.append('720p')
-    if movie_qua4 == 'Accept File':
-        movie_allow.append('1080p')
-    if movie_qua5 == 'Accept File':
-        movie_allow.append('3D')
-    if movie_qua6 == 'Accept File':
-        movie_allow.append('CAM')
-    if movie_qua7 == 'Accept File':
-        movie_allow.extend(['TeleSync', ' TS '])
-    if movie_qua8 == 'Accept File':
-        movie_allow.append('Trailer')
-    # Block File
-    movie_key_denied = xbmcaddon.Addon().getSetting('movie_key_denied').replace(', ', ',').replace(' ,', ',')
-    movie_deny = re.split(',', movie_key_denied)
-    if movie_qua1 == 'Block File':
-        movie_deny.append('480p')
-    if movie_qua2 == 'Block File':
-        movie_deny.append('HDTV')
-    if movie_qua3 == 'Block File':
-        movie_deny.append('720p')
-    if movie_qua4 == 'Block File':
-        movie_deny.append('1080p')
-    if movie_qua5 == 'Block File':
-        movie_deny.append('3D')
-    if movie_qua6 == 'Block File':
-        movie_deny.append('CAM')
-    if movie_qua7 == 'Block File':
-        movie_deny.extend(['TeleSync', '?TS?'])
-    if movie_qua8 == 'Block File':
-        movie_deny.append('Trailer')
-    if '' in movie_allow:
-        movie_allow.remove('')
-    if '' in movie_deny:
-        movie_deny.remove('')
-    if len(movie_allow) == 0:
-        movie_allow = ['*']
-
-    # TV
-    TV_qua1 = xbmcaddon.Addon().getSetting('TV_qua1')  # 480p
-    TV_qua2 = xbmcaddon.Addon().getSetting('TV_qua2')  # HDTV
-    TV_qua3 = xbmcaddon.Addon().getSetting('TV_qua3')  # 720p
-    TV_qua4 = xbmcaddon.Addon().getSetting('TV_qua4')  # 1080p
-    # Accept File
-    TV_key_allowed = xbmcaddon.Addon().getSetting('TV_key_allowed').replace(', ', ',').replace(' ,', ',')
-    TV_allow = re.split(',', TV_key_allowed)
-    if TV_qua1 == 'Accept File':
-        TV_allow.append('480p')
-    if TV_qua2 == 'Accept File':
-        TV_allow.append('HDTV')
-    if TV_qua3 == 'Accept File':
-        TV_allow.append('720p')
-    if TV_qua4 == 'Accept File':
-        TV_allow.append('1080p')
-    # Block File
-    TV_key_denied = xbmcaddon.Addon().getSetting('TV_key_denied').replace(', ', ',').replace(' ,', ',')
-    TV_deny = re.split(',', TV_key_denied)
-    if TV_qua1 == 'Block File':
-        TV_deny.append('480p')
-    if TV_qua2 == 'Block File':
-        TV_deny.append('HDTV')
-    if TV_qua3 == 'Block File':
-        TV_deny.append('720p')
-    if TV_qua4 == 'Block File':
-        TV_deny.append('1080p')
-    if '' in TV_allow:
-        TV_allow.remove('')
-    if '' in TV_deny:
-        TV_deny.remove('')
-    if len(TV_allow) == 0:
-        TV_allow = ['*']
+    url = ''
+    quality_allow = read_keywords(Settings["general_accept"])
+    quality_deny = read_keywords(Settings["general_block"])
+    min_size = Settings["general_min_size"]
+    max_size = Settings["general_max_size"]
+    queries = [Settings["general_query1"],
+               Settings["general_query2"],
+               Settings["general_query3"],
+               Settings["general_query4"],
+               Settings["general_query5"]]
 
     @classmethod
-    def add(cls, title="", url=""):
-        if title is not "" and url is not "":
-            cls.items.append((title, url))
+    def use_general(cls, info):
+        cls.info = info
+        cls.url = Settings["general_url"]
+        cls.quality_allow = read_keywords(Settings["general_accept"])
+        cls.quality_deny = read_keywords(Settings["general_block"])
+        cls.min_size = Settings["general_min_size"]
+        cls.max_size = Settings["general_max_size"]
+        cls.queries = [Settings["general_query1"],
+                       Settings["general_query2"],
+                       Settings["general_query3"],
+                       Settings["general_query4"],
+                       Settings["general_query5"]]
 
     @classmethod
-    def use_movie(cls):
-        cls.quality_allow = cls.movie_allow
-        cls.quality_deny = cls.movie_deny
-        cls.min_size = cls.movie_min_size
-        cls.max_size = cls.movie_max_size
+    def use_movie(cls, info):
+        cls.info = info
+        cls.url = Settings["movie_url"]
+        cls.quality_allow = read_keywords(Settings["movie_accept"])
+        cls.quality_deny = read_keywords(Settings["movie_block"])
+        cls.min_size = Settings["movie_min_size"]
+        cls.max_size = Settings["movie_max_size"]
+        cls.queries = [Settings["movie_query1"],
+                       Settings["movie_query2"],
+                       Settings["movie_query3"],
+                       Settings["movie_query4"],
+                       Settings["movie_query5"]]
 
     @classmethod
-    def use_tv(cls):
-        cls.quality_allow = cls.TV_allow
-        cls.quality_deny = cls.TV_deny
-        cls.min_size = cls.TV_min_size
-        cls.max_size = cls.TV_max_size
+    def use_tv(cls, info):
+        cls.info = info
+        cls.url = Settings["tv_url"]
+        cls.quality_allow = read_keywords(Settings["tv_accept"])
+        cls.quality_deny = read_keywords(Settings["tv_block"])
+        cls.min_size = Settings["tv_min_size"]
+        cls.max_size = Settings["tv_max_size"]
+        cls.queries = [Settings["tv_query1"],
+                       Settings["tv_query2"],
+                       Settings["tv_query3"],
+                       Settings["tv_query4"],
+                       Settings["tv_query5"]]
+
+    @classmethod
+    def use_season(cls, info):
+        cls.info = info
+        cls.url = Settings["season_url"]
+        cls.quality_allow = read_keywords(Settings["season_accept"])
+        cls.quality_deny = read_keywords(Settings["season_block"])
+        cls.min_size = Settings["season_min_size"]
+        cls.max_size = Settings["season_max_size"]
+        cls.queries = [Settings["season_query1"],
+                       Settings["season_query2"],
+                       Settings["season_query3"],
+                       Settings["season_query4"],
+                       Settings["season_query5"]]
+
+    @classmethod
+    def use_anime(cls, info):
+        cls.info = info
+        cls.url = Settings["anime_url"]
+        cls.quality_allow = read_keywords(Settings["anime_accept"])
+        cls.quality_deny = read_keywords(Settings["anime_block"])
+        cls.min_size = Settings["anime_min_size"]
+        cls.max_size = Settings["anime_max_size"]
+        cls.queries = [Settings["anime_query1"],
+                       Settings["anime_query2"],
+                       Settings["anime_query3"],
+                       Settings["anime_query4"],
+                       Settings["anime_query5"]]
 
     @classmethod
     def information(cls):
-        log.info('[%s] Accepted Keywords: %s' % (cls.id_addon, str(cls.quality_allow)))
-        log.info('[%s] Blocked Keywords: %s' % (cls.id_addon, str(cls.quality_deny)))
-        log.info('[%s] min Size: %s' % (cls.id_addon, str(cls.min_size) + ' GB'))
-        log.info(
-            '[%s] max Size: %s' % (cls.id_addon, (str(cls.max_size) + ' GB') if cls.max_size != 10 else 'MAX'))
+        log.info('Accepted Keywords: %s' % cls.quality_allow)
+        log.info('Blocked Keywords: %s' % cls.quality_deny)
+        log.info('min Size: %s' % str(cls.min_size) + ' GB')
+        log.info('max Size: %s' % ((str(cls.max_size) + ' GB') if cls.max_size != 10 else 'MAX'))
 
     # validate keywords
     @staticmethod
@@ -535,7 +493,7 @@ class Filtering:
             for key in keys:
                 res2 = []
                 for item in re.split('\s', key):
-                    item = item.replace('?', ' ').replace('_', '')
+                    item = item.replace('?', ' ').replace('_', ' ')
                     if strict:
                         item = ' ' + item + ' '  # it makes that strict the comparation
                     if item.upper() in value.upper():
@@ -559,15 +517,9 @@ class Filtering:
 
     @staticmethod
     def normalize(name):
-        from unicodedata import normalize
-        import types
-
-        if types.StringType == type(name):
-            unicode_name = unicode(name, 'utf-8', 'ignore')
-        else:
-            unicode_name = name
-        normalize_name = normalize('NFKD', unicode_name)
-        return normalize_name.encode('ascii', 'ignore')
+        if isinstance(name, unicode):
+            return name.encode('utf-8', 'ignore')
+        return name
 
     @staticmethod
     def un_code_name(name):  # convert all the &# codes to char, remove extra-space and normalize
@@ -602,11 +554,11 @@ class Filtering:
     @classmethod
     def verify(cls, name, size):
         if name is None or name is '':
-            cls.reason = name.replace(' - ' + cls.name_provider, '') + ' ***Empty Name***'
+            cls.reason = name.replace(' - ' + Settings.name_provider, '') + ' ***Empty Name***'
             return False
         name = cls.safe_name(name)
         cls.title = cls.safe_name(cls.title)
-        cls.reason = name.replace(' - ' + cls.name_provider, '') + ' ***Blocked File by'
+        cls.reason = name.replace(' - ' + Settings.name_provider, '') + ' ***Blocked File by'
         if cls.included(name, [cls.title], True):
             result = True
             if name is not None:
@@ -671,11 +623,11 @@ def generate_payload(generator=None, read_magnet_link=False):
     return results
 
 
-def process(separator="%20", generator=None, read_magnet_link=False):
+def process(generator=None, read_magnet_link=False):
     from threading import Thread
     threads = []
 
-    t = Thread(target=execute_process, args=(separator, generator, read_magnet_link))
+    t = Thread(target=execute_process, args=(generator, read_magnet_link))
     threads.append(t)
 
     # Start all threads
@@ -689,25 +641,55 @@ def process(separator="%20", generator=None, read_magnet_link=False):
     return Filtering.results
 
 
-def execute_process(separator="%20", generator=None, read_magnet_link=False):
-    for query, url in Filtering.items:
-        if 'movie' == Filtering.type:
-            Filtering.use_movie()
-        elif 'show' == Filtering.type:
-            Filtering.use_tv()
-            query = exception(query)  # CSI series problem
-        elif 'anime' == Filtering.type:
-            Filtering.use_tv()
-        Filtering.title = query + ' ' + Settings["extra"]  # to do filtering by name
-        if Filtering.time_noti > 0:
-            from xbmcgui import Dialog
-            dialog = Dialog()
-            dialog.notification(Filtering.name_provider,
-                                query.title(),
-                                Filtering.icon,
-                                Filtering.time_noti)
-            del Dialog
-        url_search = url.rstrip().replace(' ', separator)
-        log.info(url_search)
-        Browser.open(url_search)
-        Filtering.results.extend(generate_payload(generator(Browser.content), read_magnet_link))
+def execute_process(generator=None, read_magnet_link=False):
+    for query in Filtering.queries:
+        keywords = read_keywords(query)
+        for keyword in keywords:
+            keyword = keyword.lower()
+            if 'title' in keyword:
+                if ':' in keyword:
+                    keys = keyword.split(':')
+                    title = translator(Filtering.info['imdb_id'], keys[1], False)
+                else:
+                    title = Filtering.info["title"].encode('utf-8')
+                query = query.replace('{%s}' % keyword, title)
+            if 'year' in keyword:
+                query = query.replace('{%s}' % keyword, Filtering.info["year"])
+            if 'season' in keyword:
+                if ':' in keyword:
+                    keys = keyword.split(':')
+                    season = format_decimal(get_int(keys[1])) % Filtering.info["season"]
+                else:
+                    season = '%s' % Filtering.info["season"]
+                query = query.replace('{%s}' % keyword, '' + season)
+            if 'episode' in keyword:
+                if ':' in keyword:
+                    keys = keyword.split(':')
+                    episode = format_decimal(get_int(keys[1])) % Filtering.info["episode"]
+                else:
+                    episode = '%s' % Filtering.info["episode"]
+                query = query.replace('{%s}' % keyword, '' + episode)
+        if query is not '':
+            # creating url
+            url_search = Filtering.url.replace('QUERY', query.replace(' ', Settings['separator']))
+            # creating the payload
+            payload = Filtering.payload
+            log.info(payload)
+            for key, value in payload.iteritems():
+                if 'QUERY' in value:
+                    payload[key] = payload[key].replace('QUERY', query)
+            log.info(query)
+            log.info(Filtering.payload)
+            log.info(payload)
+            Filtering.title = query  # to do filtering by name
+            if Settings["time_noti"] > 0:
+                from xbmcgui import Dialog
+                dialog = Dialog()
+                dialog.notification(Settings.name_provider,
+                                    query.title(),
+                                    Settings.icon,
+                                    Settings["time_noti"])
+                del Dialog
+            log.info(url_search)
+            Browser.open(url_search, payload=payload)
+            Filtering.results.extend(generate_payload(generator(Browser.content), read_magnet_link))
