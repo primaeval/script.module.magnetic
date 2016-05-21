@@ -673,11 +673,13 @@ def execute_process(generator=None, read_magnet_link=False):
             # creating url
             url_search = Filtering.url.replace('QUERY', query.replace(' ', Settings['separator']))
             # creating the payload
-            payload = Filtering.payload
+            payload = dict()
             log.info(payload)
-            for key, value in payload.iteritems():
+            for key, value in Filtering.payload.iteritems():
                 if 'QUERY' in value:
-                    payload[key] = payload[key].replace('QUERY', query)
+                    payload[key] = Filtering.payload[key].replace('QUERY', query)
+                else:
+                    payload[key] = Filtering.payload[key]
             log.info(query)
             log.info(Filtering.payload)
             log.info(payload)
