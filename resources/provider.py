@@ -166,15 +166,15 @@ class Browser:
 
     # to open any web page
     @classmethod
-    def open(cls, url='', language='en', payload=None, data=None):
-        if payload is None:
-            payload = {}
-        if data is not None:
-            url += '?' + urlencode(data)
+    def open(cls, url='', language='en', post_data=None, get_data=None):
+        if post_data is None:
+            post_data = {}
+        if get_data is not None:
+            url += '?' + urlencode(get_data)
         log.info(url)
         result = True
-        if len(payload) > 0:
-            cls.create_cookies(payload)
+        if len(post_data) > 0:
+            cls.create_cookies(post_data)
         if cls._cookies is not None:
             req = urllib2.Request(url, cls._cookies)
             cls._cookies = None
@@ -391,8 +391,8 @@ class Filtering:
         pass
 
     info = dict(title="")
-    payload = {}
-    data = None
+    post_data = {}
+    get_data = None
     reason = ''
     title = ''
     results = []
@@ -676,25 +676,25 @@ def execute_process(generator=None, read_magnet_link=False, verify_name=True, ve
         if query is not '':
             # creating url
             url_search = Filtering.url.replace('QUERY', query.replace(' ', Settings['separator']))
-            # creating the payload
+            # creating the payload for Post Method
             payload = dict()
-            for key, value in Filtering.payload.iteritems():
+            for key, value in Filtering.post_data.iteritems():
                 if 'QUERY' in value:
-                    payload[key] = Filtering.payload[key].replace('QUERY', query)
+                    payload[key] = Filtering.post_data[key].replace('QUERY', query)
                 else:
-                    payload[key] = Filtering.payload[key]
+                    payload[key] = Filtering.post_data[key]
             log.debug(query)
-            log.debug(Filtering.payload)
+            log.debug(Filtering.post_data)
             log.debug(payload)
-            # creating the data
+            # creating the payload for Get Method
             data = None
-            if Filtering.data is not None:
+            if Filtering.get_data is not None:
                 data = dict()
-                for key, value in Filtering.data.iteritems():
+                for key, value in Filtering.get_data.iteritems():
                     if 'QUERY' in value:
-                        data[key] = Filtering.data[key].replace('QUERY', query)
+                        data[key] = Filtering.get_data[key].replace('QUERY', query)
                     else:
-                        data[key] = Filtering.data[key]
+                        data[key] = Filtering.get_data[key]
             Filtering.title = query  # to do filtering by name
             if Settings["time_noti"] > 0:
                 from xbmcgui import Dialog
@@ -705,6 +705,6 @@ def execute_process(generator=None, read_magnet_link=False, verify_name=True, ve
                                     Settings["time_noti"])
                 del Dialog
             log.info(url_search)
-            Browser.open(url_search, payload=payload, data=data)
+            Browser.open(url_search, post_data=payload, get_data=data)
             Filtering.results.extend(generate_payload(generator(Browser.content),
                                                       read_magnet_link, verify_name, verify_size))

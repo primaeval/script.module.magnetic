@@ -28,10 +28,10 @@ def process_provider(self):
     parsed = urlparse.urlparse(self.path)
     addonid = urlparse.parse_qs(parsed.query)['addonid'][0]
     content_length = int(self.headers['Content-Length'])
-    post_data = self.rfile.read(content_length)
+    payload = self.rfile.read(content_length)
     self._write_headers()
     self.wfile.write("OK")
-    data = json.loads(post_data)
+    data = json.loads(payload)
     logger.log.info("Provider " + addonid + " returned " + str(len(data)) + " results in " + str(
         "%.1f" % round(time.clock() - request_time, 2)) + " seconds")
     if len(data) > 0:
@@ -129,8 +129,8 @@ def search(method, payload_json):
         # if all providers have returned results exit
         if available_providers == 0:
             break
-        # check every 200ms
-        xbmc.sleep(200)
+        # check every 500ms
+        xbmc.sleep(500)
         pass
     logger.log.info("Providers search returned: " + str(len(provider_results)) + " results")
 
