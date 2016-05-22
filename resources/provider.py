@@ -166,10 +166,11 @@ class Browser:
 
     # to open any web page
     @classmethod
-    def open(cls, url='', language='en', payload=None):
+    def open(cls, url='', language='en', payload=None, data=None):
         if payload is None:
             payload = {}
-
+        if data is not None:
+            url += '?' + urlencode(data)
         log.info(url)
         result = True
         if len(payload) > 0:
@@ -391,6 +392,7 @@ class Filtering:
 
     info = dict(title="")
     payload = {}
+    data = None
     reason = ''
     title = ''
     results = []
@@ -595,13 +597,15 @@ class Magnet:
         self.trackers = re.findall('tr=(.*?)&', self.magnet)
 
 
-def generate_payload(generator=None, read_magnet_link=False):
+def generate_payload(generator=None, read_magnet_link=False, verify_name=True, verify_size=True):
     Filtering.information()  # print filters xbmcaddon.Addon()
     results = []
     cont = 0
     for name, magnet, size, seeds, peers in generator:
         # info_magnet = common.Magnet(magnet)
-        if Filtering.verify(name, size):
+        v_name = name if verify_name else Filtering.title
+        v_size = size if verify_size else None
+        if Filtering.verify(v_name, v_size):
             cont += 1
             if read_magnet_link:
                 magnet = get_links(magnet)  # magnet
@@ -623,11 +627,11 @@ def generate_payload(generator=None, read_magnet_link=False):
     return results
 
 
-def process(generator=None, read_magnet_link=False):
+def process(generator=None, read_magnet_link=False, verify_name=True, verify_size=True):
     from threading import Thread
     threads = []
 
-    t = Thread(target=execute_process, args=(generator, read_magnet_link))
+    t = Thread(target=execute_process, args=(generator, read_magnet_link, verify_name, verify_size))
     threads.append(t)
 
     # Start all threads
@@ -641,7 +645,7 @@ def process(generator=None, read_magnet_link=False):
     return Filtering.results
 
 
-def execute_process(generator=None, read_magnet_link=False):
+def execute_process(generator=None, read_magnet_link=False, verify_name=True, verify_size=True):
     for query in Filtering.queries:
         keywords = read_keywords(query)
         for keyword in keywords:
@@ -674,15 +678,23 @@ def execute_process(generator=None, read_magnet_link=False):
             url_search = Filtering.url.replace('QUERY', query.replace(' ', Settings['separator']))
             # creating the payload
             payload = dict()
-            log.info(payload)
             for key, value in Filtering.payload.iteritems():
                 if 'QUERY' in value:
                     payload[key] = Filtering.payload[key].replace('QUERY', query)
                 else:
                     payload[key] = Filtering.payload[key]
-            log.info(query)
-            log.info(Filtering.payload)
-            log.info(payload)
+            log.debug(query)
+            log.debug(Filtering.payload)
+            log.debug(payload)
+            # creating the data
+            data = None
+            if Filtering.data is not None:
+                data = dict()
+                for key, value in Filtering.data.iteritems():
+                    if 'QUERY' in value:
+                        data[key] = Filtering.data[key].replace('QUERY', query)
+                    else:
+                        data[key] = Filtering.data[key]
             Filtering.title = query  # to do filtering by name
             if Settings["time_noti"] > 0:
                 from xbmcgui import Dialog
@@ -693,5 +705,6 @@ def execute_process(generator=None, read_magnet_link=False):
                                     Settings["time_noti"])
                 del Dialog
             log.info(url_search)
-            Browser.open(url_search, payload=payload)
-            Filtering.results.extend(generate_payload(generator(Browser.content), read_magnet_link))
+            Browser.open(url_search, payload=payload, data=data)
+            Filtering.results.extend(generate_payload(generator(Browser.content),
+                                                      read_magnet_link, verify_name, verify_size))

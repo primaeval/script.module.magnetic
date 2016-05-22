@@ -1,3 +1,4 @@
+v0.2.0 new format
 v0.1.2 fixing size
 v0.1.1 Improving speed, removing futures
 v0.1.0 First version

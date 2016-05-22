@@ -285,7 +285,7 @@ class Root(list):
                 for key, values in args:
                     results = []
                     for value in (values if isinstance(values, list) else [values]):
-                        results.append(ind.attr[key] != value)
+                        results.append(value not in ind.attr[key])
                     if all(results):
                         break
                 else:
