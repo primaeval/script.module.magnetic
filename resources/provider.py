@@ -571,8 +571,10 @@ class Filtering:
             return False
         name = cls.safe_name(name)
         cls.title = cls.safe_name(cls.title)
+        normalized_title = cls.normalize2(cls.title)
         cls.reason = name.replace(' - ' + Settings.name_provider, '') + ' ***Blocked File by'
-        if cls.included(name, [cls.title], True):
+        list_to_verify = [cls.title, normalized_title] if cls.title != normalized_title else [cls.title]
+        if cls.included(name, list_to_verify, True):
             result = True
             if name is not None:
                 if not cls.included(name, cls.quality_allow) or cls.included(name, cls.quality_deny):
