@@ -254,7 +254,7 @@ def translator(imdb_id, language, extra=True):
             title += ' ' + keywords[language]
     else:
         title = 'Pas de communication avec le themoviedb.org'
-    return title.rstrip()
+    return Filtering.safe_name(title.rstrip())
 
 
 #  Get the title from imdb id code
@@ -522,6 +522,17 @@ class Filtering:
         if isinstance(name, unicode):
             return name.encode('utf-8', 'ignore')
         return name
+
+    @staticmethod
+    def normalize2(name):
+        from unicodedata import normalize
+        import types
+        if types.StringType == type(name):
+            unicode_name = unicode(name, 'utf-8', 'ignore')
+        else:
+            unicode_name = name
+        normalize_name = normalize('NFKD', unicode_name)
+        return normalize_name.encode('ascii', 'ignore')
 
     @staticmethod
     def un_code_name(name):  # convert all the &# codes to char, remove extra-space and normalize
