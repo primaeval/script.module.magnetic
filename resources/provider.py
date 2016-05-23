@@ -234,26 +234,38 @@ class Browser:
 
 
 # find the name in different language
-def translator(imdb_id, language, extra=True):
-    import json
+def translator(title, imdb_id, language, extra=True):
     keywords = {'en': '', 'de': '', 'es': 'espa', 'fr': 'french', 'it': 'italian', 'pt': 'portug'}
-    url_themoviedb = "http://api.themoviedb.org/3/find/%s?api_key=8d0e4dca86c779f4157fc2c469c372ca&language=%s" \
-                     "&external_source=imdb_id" % (imdb_id, language)
-    if Browser.open(url_themoviedb):
-        results = json.loads(Browser.content)
-        if len(results['movie_results']) > 0:
-            title = results['movie_results'][0]['title'].encode('utf-8')
-            original_title = results['movie_results'][0]['original_title'].encode('utf-8')
-        elif len(results['tv_results']) > 0:
-            title = results['tv_results'][0]['name'].encode('utf-8')
-            original_title = results['tv_results'][0]['original_name'].encode('utf-8')
+    if len(imdb_id) > 0:
+        url_themoviedb = "http://api.themoviedb.org/3/find/%s?api_key=8d0e4dca86c779f4157fc2c469c372ca&language=%s" \
+                         "&external_source=imdb_id" % (imdb_id, language)
+        if Browser.open(url_themoviedb):
+            results = json.loads(Browser.content)
+            if len(results['movie_results']) > 0:
+                title = results['movie_results'][0]['title'].encode('utf-8')
+                original_title = results['movie_results'][0]['original_title'].encode('utf-8')
+            elif len(results['tv_results']) > 0:
+                title = results['tv_results'][0]['name'].encode('utf-8')
+                original_title = results['tv_results'][0]['original_name'].encode('utf-8')
+            else:
+                title = ""
+                original_title = ""
+            if title == original_title and extra:
+                title += ' ' + keywords[language]
         else:
-            title = ""
-            original_title = ""
-        if title == original_title and extra:
-            title += ' ' + keywords[language]
+            title = 'Pas de communication avec le themoviedb.org'
     else:
-        title = 'Pas de communication avec le themoviedb.org'
+        url_themoviedb = "http://api.themoviedb.org/3/search/tv?api_key=8d0e4dca86c779f4157fc2c469c372ca" \
+                         "&query=%s&language=%s" % (title.replace(' ', '+'), language)
+        if Browser.open(url_themoviedb):
+            results = json.loads(Browser.content)
+            if len(results['results']) > 0:
+                title = results['results'][0]['name']
+                original_title = results['results'][0]['original_name']
+                if title == original_title and extra:
+                    title += ' ' + keywords[language]
+        else:
+            title = 'Pas de communication avec le themoviedb.org'
     return Filtering.safe_name(title.rstrip())
 
 
@@ -666,7 +678,8 @@ def execute_process(generator=None, read_magnet_link=False, verify_name=True, ve
             if 'title' in keyword:
                 if ':' in keyword:
                     keys = keyword.split(':')
-                    title = translator(Filtering.info['imdb_id'], keys[1], False)
+                    log.debug(Filtering.info)
+                    title = translator(Filtering.info['title'], Filtering.info.get('imdb_id', ''), keys[1], False)
                 else:
                     title = Filtering.info["title"].encode('utf-8')
                 query = query.replace('{%s}' % keyword, title)
