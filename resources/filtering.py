@@ -7,13 +7,12 @@ GIGABYTE = 1073741824
 
 # filter results
 def apply_filters(results_list):
-    return results_list
-    filtered_quality_results = filter_quality(results_list)
-    filtered_size_results = filter_size(filtered_quality_results)
+    # filtered_quality_results = filter_quality(results_list)
+    # filtered_size_results = filter_size(filtered_quality_results)
     if get_setting("quality_sort", bool):
-        return sort_by_quality(filtered_size_results)
+        return sort_by_quality(results_list)
     else:
-        return filtered_size_results
+        return results_list
 
 
 # remove dupes and sort by seeds

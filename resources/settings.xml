@@ -3,7 +3,7 @@
     <category label="General">
         <setting id="provider_timeout" label="Search Timeout Seconds" type="slider" default="30" option="int"
                  range="1,1,60"/>
-        <setting id="max_size" label="Maximum Size (GB's)" type="slider" default="6" option="int" range="1,1,15"/>
+        <!--<setting id="max_size" label="Maximum Size (GB's)" type="slider" default="6" option="int" range="1,1,15"/>-->
         <setting id="quality_sort" type="bool" label="Sort By Quality" default="false"/>
     </category>
 </settings>

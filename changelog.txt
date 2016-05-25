@@ -1,3 +1,4 @@
+v0.2.7 adding manager
 v0.2.6 translation shows
 v0.2.5 latest version
 v0.2.2 adding safename in translation

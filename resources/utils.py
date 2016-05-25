@@ -12,6 +12,18 @@ ADDON_NAME = ADDON.getAddonInfo("name")
 PATH_ADDONS = xbmc.translatePath("special://home/addons/")
 
 
+def disable_provider(provider):
+    xbmc.executeJSONRPC('{"jsonrpc":"2.0",'
+                        '"method":"Addons.SetAddonEnabled",'
+                        '"id":1,"params":{"addonid":"%s","enabled":false}}' % provider)
+
+
+def enable_provider(provider):
+    xbmc.executeJSONRPC('{"jsonrpc":"2.0",'
+                        '"method":"Addons.SetAddonEnabled",'
+                        '"id":1,"params":{"addonid":"%s","enabled":false}}' % provider)
+
+
 # Borrowed from xbmcswift2
 def get_setting(key, converter=str, choices=None):
     value = ADDON.getSetting(id=key)
