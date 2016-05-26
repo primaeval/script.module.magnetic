@@ -1,3 +1,4 @@
+import threading
 from BaseHTTPServer import BaseHTTPRequestHandler
 from BaseHTTPServer import HTTPServer
 from SocketServer import ThreadingMixIn
@@ -17,7 +18,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 # noinspection PyPep8Naming
 class ProvidersHandler(BaseHTTPRequestHandler):
-    def _write_headers(self):
+    def _writeheaders(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
@@ -26,7 +27,7 @@ class ProvidersHandler(BaseHTTPRequestHandler):
         pass
 
     def do_HEAD(self):
-        self._write_headers()
+        self._writeheaders()
 
     # provider addon callback to append results to response
     def do_POST(self):
@@ -34,7 +35,7 @@ class ProvidersHandler(BaseHTTPRequestHandler):
 
     # kodi call to get results
     def do_GET(self):
-        self._write_headers()
+        self._writeheaders()
         self.wfile.write(magnetic.get_results(self))
 
 
@@ -50,8 +51,8 @@ if __name__ == '__main__':
     logger.log.info('          |___/')
     logger.log.info('')
     logger.log.info('Magnetic service at ' + str(PROVIDER_SERVICE_HOST) + ":" + str(PROVIDER_SERVICE_PORT))
-    server.serve_forever()
+    threading.Timer(0, server.serve_forever).start()
     while not xbmc.abortRequested:
         xbmc.sleep(1500)
-
+    server.shutdown()
     logger.log.info("Exiting providers service")
