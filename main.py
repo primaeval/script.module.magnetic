@@ -33,13 +33,13 @@ listing = []
 mode = args.get('mode', '')
 addonid = args.get('addonid', '')
 
-if 'provider' in mode:
+if mode == 'provider':
     xbmcaddon.Addon(addonid).openSettings()
 
-elif 'settings' in mode:
+elif mode == 'settings':
     xbmcaddon.Addon().openSettings()
 
-elif 'copy' in mode:
+elif mode == 'copy':
     path_folder = xbmcaddon.Addon(addonid).getAddonInfo('path')
     value = dict()  # it contains all the settings from xml file
     fileName = path.join(path_folder, "resources", "settings.xml")
@@ -60,15 +60,35 @@ elif 'copy' in mode:
                     xbmcaddon.Addon(provider).setSetting(id=key, value=val)
         xbmcgui.Dialog().notification('Magnetic', 'All the settings were copied')
 
-elif 'enable' in mode:
+elif mode == 'enable':
     xbmc.executeJSONRPC(
         '{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","id":1,"params":{"addonid":"%s","enabled":true}}' % addonid)
     mode = ''
     xbmc.executebuiltin("Container.Refresh")
 
-elif 'disable' in mode:
+elif mode == 'disable':
     xbmc.executeJSONRPC(
         '{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","id":1,"params":{"addonid":"%s","enabled":false}}' % addonid)
+    mode = ''
+    xbmc.executebuiltin("Container.Refresh")
+
+elif mode == 'enable_all':
+    for provider in get_list_providers():
+        print provider
+        xbmc.executeJSONRPC(
+            '{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","id":1,"params":{"addonid":"%s","enabled":true}}' %
+            provider['addonid'])
+    mode = ''
+    xbmc.executebuiltin("Container.Refresh")
+
+elif mode == 'disable_all':
+    print "***********I am here**"
+    print get_list_providers()
+    for provider in get_list_providers():
+        print provider
+        xbmc.executeJSONRPC(
+            '{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","id":1,"params":{"addonid":"%s","enabled":false}}' %
+            provider['addonid'])
     mode = ''
     xbmc.executebuiltin("Container.Refresh")
 
@@ -95,6 +115,10 @@ if len(mode) == 0:
         list_item.addContextMenuItems([('Check', 'Container.Refresh'),
                                        ('Check All', 'Container.Refresh'),
                                        menu_item,
+                                       ('Enable All',
+                                        'XBMC.RunPlugin(plugin://script.module.magnetic?mode=enable_all)'),
+                                       ('Disable All',
+                                        'XBMC.RunPlugin(plugin://script.module.magnetic?mode=disable_all)'),
                                        ('Copy Settings To...',
                                         'XBMC.RunPlugin(plugin://script.module.magnetic?mode=copy&addonid=%s)' %
                                         provider['addonid']),
