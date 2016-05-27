@@ -1,3 +1,4 @@
+v0.2.9 copying settings
 v0.2.8 shutdown service
 v0.2.7 adding manager
 v0.2.6 translation shows

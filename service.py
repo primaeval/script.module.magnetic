@@ -18,7 +18,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 # noinspection PyPep8Naming
 class ProvidersHandler(BaseHTTPRequestHandler):
-    def _writeheaders(self):
+    def _write_headers(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
@@ -27,7 +27,7 @@ class ProvidersHandler(BaseHTTPRequestHandler):
         pass
 
     def do_HEAD(self):
-        self._writeheaders()
+        self._write_headers()
 
     # provider addon callback to append results to response
     def do_POST(self):
@@ -35,7 +35,7 @@ class ProvidersHandler(BaseHTTPRequestHandler):
 
     # kodi call to get results
     def do_GET(self):
-        self._writeheaders()
+        self._write_headers()
         self.wfile.write(magnetic.get_results(self))
 
 
