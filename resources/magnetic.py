@@ -16,6 +16,7 @@ provider_results = []
 available_providers = 0
 request_time = time.clock()
 
+from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
 
 # provider call back with results
 def process_provider(self):
@@ -60,7 +61,7 @@ def get_results(self):
 
     elif operation == "movie":
         method = "search_movie"
-        year = info('year', [''])[0]
+        year = info.get('year', [''])[0]
         imdb_id = info.get('imdb', [''])[0]
         movie_item = {'imdb_id': str(imdb_id),
                       'title': title,
