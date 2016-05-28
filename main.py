@@ -37,15 +37,17 @@ elif mode == 'copy':
             if 'url' not in key and 'separator' not in key:
                 value[key] = xbmcaddon.Addon(addonid).getSetting(id=key)
 
-        items = ['All providers'] + [provider['addonid'] for provider in utils.get_list_providers()]
+        items = []
+        for provider in utils.get_list_providers():
+            if provider['enabled']:
+                items.append(provider['addonid'])
         items.remove(addonid)
-        ret = xbmcgui.Dialog().select('Select the provider', items)
-        if ret != -1:
-            del items[0]
+        ret = xbmcgui.Dialog().select('Select the provider', ['All providers'] + items + ['CANCEL'])
+        if ret != -1 and ret <= len(items):
             for key, val in value.items():
-                for provider in (items if ret > 0 else [items[ret - 1]]):
+                for provider in (items if ret == 0 else [items[ret-1]]):
                     xbmcaddon.Addon(provider).setSetting(id=key, value=val)
-        xbmcgui.Dialog().notification('Magnetic', 'All the settings were copied')
+            xbmcgui.Dialog().notification('Magnetic', 'All the settings were copied')
 
 
 elif mode == 'check':
@@ -77,7 +79,7 @@ if len(mode) == 0:
         name_provider = provider['name']  # gets name
         tag = '[B][COLOR FF008542][ENABLE] [/COLOR][/B]'
         menu_check = [('Check', 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=check&addonid=%s)' %
-                      provider['addonid'])]
+                       provider['addonid'])]
         menu_enable = ('Disable', 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=disable&addonid=%s)' %
                        provider['addonid'])
         if not provider['enabled']:
