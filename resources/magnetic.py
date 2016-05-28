@@ -16,7 +16,6 @@ provider_results = []
 available_providers = 0
 request_time = time.clock()
 
-from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
 
 # provider call back with results
 def process_provider(self):
