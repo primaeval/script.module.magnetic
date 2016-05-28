@@ -65,7 +65,7 @@ def disable_provider(provider):
 def enable_provider(provider):
     xbmc.executeJSONRPC('{"jsonrpc":"2.0",'
                         '"method":"Addons.SetAddonEnabled",'
-                        '"id":1,"params":{"addonid":"%s","enabled":false}}' % provider)
+                        '"id":1,"params":{"addonid":"%s","enabled":true}}' % provider)
 
 
 # Borrowed from xbmcswift2

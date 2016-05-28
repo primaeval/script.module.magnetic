@@ -63,12 +63,12 @@ elif mode == 'disable':
 
 elif mode == 'enable_all':
     for provider in utils.get_list_providers():
-        utils.enable_provider(provider)
+        utils.enable_provider(provider['addonid'])
     xbmc.executebuiltin("Container.Refresh")
 
 elif mode == 'disable_all':
     for provider in utils.get_list_providers():
-        utils.disable_provider(provider)
+        utils.disable_provider(provider['addonid'])
     xbmc.executebuiltin("Container.Refresh")
 
 if len(mode) == 0:
@@ -93,7 +93,10 @@ if len(mode) == 0:
         list_item.setArt({'thumb': icon,
                           'icon': icon,
                           'fanart': fanart})
-        url = base_url + '?mode=provider&addonid=%s' % provider['addonid']
+        if provider['enabled']:
+            url = base_url + '?mode=provider&addonid=%s' % provider['addonid']
+        else:
+            url = ''
         is_folder = False
         list_item.addContextMenuItems(menu_check +
                                       [('Check All', 'Container.Refresh'),
