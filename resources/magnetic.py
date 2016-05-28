@@ -12,10 +12,6 @@ import logger
 from utils import get_icon_path
 from utils import notify, get_setting, ADDON_NAME
 
-# provider service config
-PROVIDER_SERVICE_HOST = "localhost"
-PROVIDER_SERVICE_PORT = 5005
-
 provider_results = []
 available_providers = 0
 request_time = time.clock()
@@ -52,60 +48,65 @@ def get_results(self):
     # request data
     parsed = urlparse.urlparse(self.path)
 
-    if 'search=' not in parsed.query:
-        return []
+    info = urlparse.parse_qs(parsed.query)
+    operation = info.get('search', [''])[0]
+    provider = info.get('provider', [''])[0]
+    title = unquote_plus(str(info.get('title', [''])[0]).replace("'", ""))
 
-    operation = urlparse.parse_qs(parsed.query)['search'][0]
-
-    if operation == "general":
-        method = "search"
-        title = urlparse.parse_qs(parsed.query)['title'][0]
-        general_item = {'title': unquote_plus(str(title).replace("'", ""))}
+    if operation == 'general':
+        method = 'search'
+        general_item = {'title': title}
         payload = json.dumps(general_item)
 
     elif operation == "movie":
         method = "search_movie"
-        title = urlparse.parse_qs(parsed.query)['title'][0]
-        year = urlparse.parse_qs(parsed.query)['year'][0]
-        imdb_id = urlparse.parse_qs(parsed.query)['imdb'][0]
-        movie_item = {'imdb_id': str(imdb_id), 'title': unquote_plus(str(title).replace("'", "")), 'year': str(year)}
+        year = info('year', [''])[0]
+        imdb_id = info.get('imdb', [''])[0]
+        movie_item = {'imdb_id': str(imdb_id),
+                      'title': title,
+                      'year': str(year)}
         payload = json.dumps(movie_item)
 
     elif operation == "episode":
         method = "search_episode"
-        title = urlparse.parse_qs(parsed.query)['title'][0]
-        season = urlparse.parse_qs(parsed.query)['season'][0]
-        episode = urlparse.parse_qs(parsed.query)['episode'][0]
-        episode_item = {'title': unquote_plus(str(title).replace("'", "")), 'season': int(season),
-                        'episode': int(episode), 'absolute_number': int(0)}
+        season = info.get('season', [''])[0]
+        episode = info.get('episode', [''])[0]
+        episode_item = {'title': title,
+                        'season': int(season),
+                        'episode': int(episode),
+                        'absolute_number': int(0)}
         payload = json.dumps(episode_item)
 
     elif operation == "season":
         method = "search_season"
-        title = urlparse.parse_qs(parsed.query)['title'][0]
-        season = urlparse.parse_qs(parsed.query)['season'][0]
-        season_item = {'title': unquote_plus(str(title).replace("'", "")), 'season': int(season),
+        season = info.get('season', [''])[0]
+        season_item = {'title': title,
+                       'season': int(season),
                        'absolute_number': int(0)}
         payload = json.dumps(season_item)
 
     else:
         return json.dumps("OPERATION NOT FOUND")
 
-    normalized_list = search(method, payload)
+    if len(title) == 0 or len(method) == 0:
+        return json.dumps("Payload Incomplete!!!      ") + payload
+    normalized_list = search(method, payload, provider)
 
     logger.log.info("Filtering returned: " + str(len(normalized_list['magnets'])) + " results")
     return json.dumps(normalized_list)
 
 
 # search for torrents - call providers
-def search(method, payload_json):
+def search(method, payload_json, provider=""):
     global provider_results
     global available_providers
     global request_time
     request_time = time.clock()
     # collect data
-    path = xbmc.translatePath("special://home/addons/")
-    addons = os.listdir(path)
+    if len(provider) == 0:
+        addons = os.listdir(xbmc.translatePath("special://home/addons/"))
+    else:
+        addons = [provider]
 
     # get magnetic addons
     magnetic_addons = []
@@ -129,10 +130,8 @@ def search(method, payload_json):
         # if all providers have returned results exit
         if available_providers == 0:
             break
-        # check every 500ms
-        xbmc.sleep(500)
-        pass
-    logger.log.info("Providers search returned: " + str(len(provider_results)) + " results")
+        # check every 1000ms
+        xbmc.sleep(1000)
 
     # filter magnets and append to results
     filtered_results = dict(magnets=filtering.apply_filters(provider_results))
@@ -140,6 +139,8 @@ def search(method, payload_json):
     # append number and time on payload
     filtered_results['results'] = len(filtered_results['magnets'])
     filtered_results['duration'] = str("%.1f" % round(time.clock() - request_time, 2)) + " seconds"
+    logger.log.info(
+        "Providers search returned: %s results in %s" % (str(len(provider_results)), filtered_results['duration']))
     return filtered_results
 
 

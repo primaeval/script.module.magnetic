@@ -15,7 +15,7 @@ import xbmcaddon
 
 from ehp import *
 from logger import log
-from magnetic import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
+from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
 from utils import ADDON
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36" \
@@ -27,6 +27,9 @@ urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(COOKIES)
 
 # noinspection PyBroadException
 def register(search, search_movie, search_episode, search_season):
+    if len(sys.argv) < 4:
+        xbmcaddon.Addon().openSettings()
+        return
     query = json.loads(unquote_plus(sys.argv[3]))
     method = sys.argv[2]
     addonid = sys.argv[1]

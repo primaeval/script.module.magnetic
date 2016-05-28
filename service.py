@@ -1,3 +1,4 @@
+import threading
 from BaseHTTPServer import BaseHTTPRequestHandler
 from BaseHTTPServer import HTTPServer
 from SocketServer import ThreadingMixIn
@@ -6,7 +7,7 @@ import xbmc
 
 from resources import logger
 from resources import magnetic
-from resources.magnetic import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
+from resources.utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -50,8 +51,8 @@ if __name__ == '__main__':
     logger.log.info('          |___/')
     logger.log.info('')
     logger.log.info('Magnetic service at ' + str(PROVIDER_SERVICE_HOST) + ":" + str(PROVIDER_SERVICE_PORT))
-    server.serve_forever()
+    threading.Timer(0, server.serve_forever).start()
     while not xbmc.abortRequested:
         xbmc.sleep(1500)
-
+    server.shutdown()
     logger.log.info("Exiting providers service")
