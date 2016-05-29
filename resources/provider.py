@@ -203,6 +203,8 @@ class Browser:
         except urllib2.URLError as e:
             cls.status = e.reason
             result = False
+        log.debug("Status: " + str(cls.status))
+        log.debug(cls.content)
         return result
 
     # alternative when it is problem with https
