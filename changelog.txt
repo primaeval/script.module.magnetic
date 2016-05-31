@@ -1,3 +1,4 @@
+v0.3.3 Changing main name
 v0.3.2 dialog copy
 v0.3.1 fixing bug with copying settings
 v0.3.0 fixing bug with enabled all

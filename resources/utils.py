@@ -21,7 +21,7 @@ PROVIDER_SERVICE_PORT = 5005
 def check_provider(provider=""):
     magnetic_url = "http://%s:%s" % (str(PROVIDER_SERVICE_HOST), str(PROVIDER_SERVICE_PORT))
     url = magnetic_url + "?search=general&title=spectre&provider=%s" % provider
-    results = []
+    results = dict()
     try:
         req = Request(url, None)
         resp = urlopen(req).read()

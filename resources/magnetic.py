@@ -92,7 +92,7 @@ def get_results(self):
         return json.dumps("Payload Incomplete!!!      ") + payload
     normalized_list = search(method, payload, provider)
 
-    logger.log.info("Filtering returned: " + str(len(normalized_list['magnets'])) + " results")
+    logger.log.info("Filtering returned: " + str(len(normalized_list.get('magnets', []))) + " results")
     return json.dumps(normalized_list)
 
 
@@ -111,7 +111,7 @@ def search(method, payload_json, provider=""):
     # get magnetic addons
     magnetic_addons = []
     for addon in addons:
-        if ("script.%s." % ADDON_NAME.lower()) in addon:
+        if "script.magnetic." in addon:
             available_providers += 1
             task = Thread(target=run_provider, args=(addon, method, payload_json))
             task.start()
