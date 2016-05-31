@@ -631,17 +631,18 @@ def generate_payload(generator=None, read_magnet_link=False, verify_name=True, v
     Filtering.information()  # print filters xbmcaddon.Addon()
     results = []
     cont = 0
-    for name, magnet, size, seeds, peers in generator:
-        # info_magnet = common.Magnet(magnet)
+    for name, info_hash, magnet, size, seeds, peers in generator:
         v_name = name if verify_name else Filtering.title
         v_size = size if verify_size else None
+        log.debug("name: %s \n info_hash: %s\n magnet: %s\n size: %s\n seeds: %s\n peers: %s" % (
+            name, info_hash, magnet, size, seeds, peers))
         if Filtering.verify(v_name, v_size):
             cont += 1
             if read_magnet_link:
                 magnet = get_links(magnet)  # magnet
             results.append({"name": name,
                             "uri": magnet,
-                            # "info_hash": info_magnet.hash,
+                            "info_hash": info_hash,
                             "size": size,
                             "seeds": get_int(seeds),
                             "peers": get_int(peers),
