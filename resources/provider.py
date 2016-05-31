@@ -631,7 +631,11 @@ def generate_payload(generator=None, read_magnet_link=False, verify_name=True, v
     Filtering.information()  # print filters xbmcaddon.Addon()
     results = []
     cont = 0
-    for name, info_hash, magnet, size, seeds, peers in generator:
+    for values in generator:
+        if len(values) == 5:
+            name, magnet, size, seeds, peers = values
+        else:
+            name, info_hash, magnet, size, seeds, peers = values
         v_name = name if verify_name else Filtering.title
         v_size = size if verify_size else None
         log.debug("name: %s \n info_hash: %s\n magnet: %s\n size: %s\n seeds: %s\n peers: %s" % (
