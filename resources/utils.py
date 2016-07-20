@@ -14,7 +14,7 @@ ADDON_ID = ADDON.getAddonInfo("id")
 ADDON_NAME = ADDON.getAddonInfo("name")
 PATH_ADDONS = xbmc.translatePath("special://home/addons/")
 # provider service config
-PROVIDER_SERVICE_HOST = "localhost"
+PROVIDER_SERVICE_HOST = "127.0.0.1"
 PROVIDER_SERVICE_PORT = 5005
 
 
