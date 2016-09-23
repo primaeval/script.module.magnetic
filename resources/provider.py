@@ -373,6 +373,8 @@ class MetaSettings(type):
             return get_float(mcs.value.get(item, "10"))
         elif item.endswith("min_size"):
             return get_float(mcs.value.get(item, "0"))
+        elif item.endswith("_title"):
+            return mcs.value.get(item, "true")
         else:
             return mcs.value.get(item, "")
 
@@ -414,6 +416,7 @@ class Filtering:
     title = ''
     results = []
     url = ''
+    filter_title = 'true'
     quality_allow = read_keywords(Settings["general_accept"])
     quality_deny = read_keywords(Settings["general_block"])
     min_size = Settings["general_min_size"]
@@ -428,6 +431,7 @@ class Filtering:
     def use_general(cls, info):
         cls.info = info
         cls.url = Settings["general_url"]
+        cls.filter_title = Settings["general_title"]
         cls.quality_allow = read_keywords(Settings["general_accept"])
         cls.quality_deny = read_keywords(Settings["general_block"])
         cls.min_size = Settings["general_min_size"]
@@ -442,6 +446,7 @@ class Filtering:
     def use_movie(cls, info):
         cls.info = info
         cls.url = Settings["movie_url"]
+        cls.filter_title = Settings["movie_title"]
         cls.quality_allow = read_keywords(Settings["movie_accept"])
         cls.quality_deny = read_keywords(Settings["movie_block"])
         cls.min_size = Settings["movie_min_size"]
@@ -456,6 +461,7 @@ class Filtering:
     def use_tv(cls, info):
         cls.info = info
         cls.url = Settings["tv_url"]
+        cls.filter_title = Settings["tv_title"]
         cls.quality_allow = read_keywords(Settings["tv_accept"])
         cls.quality_deny = read_keywords(Settings["tv_block"])
         cls.min_size = Settings["tv_min_size"]
@@ -470,6 +476,7 @@ class Filtering:
     def use_season(cls, info):
         cls.info = info
         cls.url = Settings["season_url"]
+        cls.filter_title = Settings["season_title"]
         cls.quality_allow = read_keywords(Settings["season_accept"])
         cls.quality_deny = read_keywords(Settings["season_block"])
         cls.min_size = Settings["season_min_size"]
@@ -484,6 +491,7 @@ class Filtering:
     def use_anime(cls, info):
         cls.info = info
         cls.url = Settings["anime_url"]
+        cls.filter_title = Settings["anime_title"]
         cls.quality_allow = read_keywords(Settings["anime_accept"])
         cls.quality_deny = read_keywords(Settings["anime_block"])
         cls.min_size = Settings["anime_min_size"]
@@ -587,7 +595,7 @@ class Filtering:
             cls.reason = name.replace(' - ' + Settings.name_provider, '') + ' ***Empty Name***'
             return False
         name = cls.safe_name(name)
-        cls.title = cls.safe_name(cls.title)
+        cls.title = cls.safe_name(cls.title) if cls.filter_title in 'true' else name
         normalized_title = cls.normalize2(cls.title)  # because sometimes there are missing accents in the results
         cls.reason = name.replace(' - ' + Settings.name_provider, '') + ' ***Blocked File by'
         list_to_verify = [cls.title, normalized_title] if cls.title != normalized_title else [cls.title]

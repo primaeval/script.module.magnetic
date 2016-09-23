@@ -10,7 +10,7 @@ import xbmc
 import filtering
 import logger
 from utils import get_icon_path
-from utils import notify, get_setting, ADDON_NAME
+from utils import notify, get_setting
 
 provider_results = []
 available_providers = 0

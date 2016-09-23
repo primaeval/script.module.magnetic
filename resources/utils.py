@@ -18,6 +18,7 @@ PROVIDER_SERVICE_HOST = "127.0.0.1"
 PROVIDER_SERVICE_PORT = 5005
 
 
+# noinspection PyBroadException
 def check_provider(provider=""):
     magnetic_url = "http://%s:%s" % (str(PROVIDER_SERVICE_HOST), str(PROVIDER_SERVICE_PORT))
     url = magnetic_url + "?search=general&title=spectre&provider=%s" % provider
