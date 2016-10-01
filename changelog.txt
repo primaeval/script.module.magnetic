@@ -1,3 +1,4 @@
+v0.4.5 adding cloudflare support
 v0.4.0 user configuration filtering by title
 v0.3.6 changing localhost for 127.0.0.0
 v0.3.5 info_hash

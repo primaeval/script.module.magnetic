@@ -200,6 +200,13 @@ class Browser:
         except urllib2.HTTPError as e:
             cls.status = e.code
             result = False
+            if e.code == 503:
+                # trying to open with antibots tool
+                import cfscrape
+                scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
+                cls.content = scraper.get(url).content
+                cls.status = 200
+                result = True
         except urllib2.URLError as e:
             cls.status = e.reason
             result = False
