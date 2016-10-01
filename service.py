@@ -7,7 +7,7 @@ import xbmc
 
 from resources import logger
 from resources import magnetic
-from resources.utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
+from resources.utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT, ADDON_VERSION
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -50,6 +50,7 @@ if __name__ == '__main__':
     logger.log.info('|_|_|_\__,_\__, |_||_\___|\__|_\__|')
     logger.log.info('          |___/')
     logger.log.info('')
+    logger.log.info('Version: %s' % ADDON_VERSION)
     logger.log.info('Magnetic service at ' + str(PROVIDER_SERVICE_HOST) + ":" + str(PROVIDER_SERVICE_PORT))
     threading.Timer(0, server.serve_forever).start()
     while not xbmc.abortRequested:
