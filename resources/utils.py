@@ -103,9 +103,20 @@ class Magnet:
 
 
 def get_int(text):
+    text = clean_number(text)
     # noinspection PyBroadException
     try:
         value = int(re.search('([0-9]*\.[0-9]+|[0-9]+)', text).group(0))
+    except:
+        value = 0
+    return value
+
+
+def get_float(text):
+    text = clean_number(text)
+    # noinspection PyBroadException
+    try:
+        value = float(re.search('([0-9]*\.[0-9]+|[0-9]+)', text).group(0))
     except:
         value = 0
     return value
@@ -128,14 +139,16 @@ def size_int(size_txt):
         return get_int(size)
 
 
-def get_float(text):
-    # noinspection PyBroadException
-    try:
-        value = float(re.search('([0-9]*\.[0-9]+|[0-9]+)', text).group(0))
-    except:
-        value = 0
-    return value
-
+def clean_number(text):
+    comma = text.find(',')
+    point = text.find('.')
+    if comma > 0 and point > 0:
+        if comma < point:
+            text = text.replace(',', '')
+        else:
+            text = text.replace('.', '')
+            text = text.replace(',', '.')
+    return text
 
 def notify(message, image=None):
     dialog = xbmcgui.Dialog()

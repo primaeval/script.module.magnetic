@@ -285,7 +285,7 @@ class Root(list):
                 for key, values in args:
                     results = []
                     for value in (values if isinstance(values, list) else [values]):
-                        results.append(value not in ind.attr[key])
+                        results.append(value != ind.attr[key])
                     if all(results):
                         break
                 else:
@@ -775,7 +775,7 @@ class Tag(Root):
 
         html += '</%s>' % self.name
 
-        return html
+        return normalize2(html)
 
 
 class Data(Root):
@@ -1179,3 +1179,14 @@ class Html(HTMLParser):
         """
 
         self.struct.mnest(data)
+
+
+def normalize2(name):
+    from unicodedata import normalize
+    import types
+    if types.StringType == type(name):
+        unicode_name = unicode(name, 'utf-8', 'ignore')
+    else:
+        unicode_name = name
+    normalize_name = normalize('NFKD', unicode_name)
+    return normalize_name.encode('ascii', 'ignore')
