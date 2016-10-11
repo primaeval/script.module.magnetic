@@ -8,3 +8,9 @@ Season: http://localhost:5005?search=season&title=SHOW&season=1
 
 specific provider
 general: http://localhost:5005?search=general&title=ANYTHING&provider=script.magnetic.name_provider
+
+
+
+Installation
+============
+Please, visit this link: https://github.com/mancuniancol/repository.magnetic
