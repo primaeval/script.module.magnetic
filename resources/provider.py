@@ -16,7 +16,7 @@ import xbmcaddon
 from ehp import *
 from logger import log
 from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
-from utils import ADDON
+from utils import ADDON, get_int, get_float
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36" \
              " (KHTML, like Gecko) Chrome/30.0.1599.66 Safari/537.36"
@@ -308,37 +308,6 @@ def get_links(page):
                 if content is not None and len(content) > 0:
                     result = 'http' + content[0] + '.torrent'
     return result
-
-
-def size_int(size_txt):
-    size_txt = size_txt.upper()
-    size1 = size_txt.replace('B', '').replace('I', '').replace('K', '').replace('M', '').replace('G', '')
-    size = get_float(size1)
-    if 'K' in size_txt:
-        size *= 1000
-    if 'M' in size_txt:
-        size *= 1000000
-    if 'G' in size_txt:
-        size *= 1e9
-    return get_int(size)
-
-
-def get_int(text):
-    # noinspection PyBroadException
-    try:
-        value = int(re.search('([0-9]*\.[0-9]+|[0-9]+)', text).group(0))
-    except:
-        value = 0
-    return value
-
-
-def get_float(text):
-    # noinspection PyBroadException
-    try:
-        value = float(re.search('([0-9]*\.[0-9]+|[0-9]+)', text).group(0))
-    except:
-        value = 0
-    return value
 
 
 def exception(title):

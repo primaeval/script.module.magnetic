@@ -125,7 +125,7 @@ def get_float(text):
 # noinspection PyBroadException
 def size_int(size_txt):
     try:
-        return int(size_txt)
+        return int(clean_number(size_txt))
     except:
         size_txt = size_txt.upper()
         size1 = size_txt.replace('B', '').replace('I', '').replace('K', '').replace('M', '').replace('G', '')
@@ -136,7 +136,7 @@ def size_int(size_txt):
             size *= 1000000
         if 'G' in size_txt:
             size *= 1e9
-        return get_int(size)
+        return size
 
 
 def clean_number(text):
@@ -149,6 +149,7 @@ def clean_number(text):
             text = text.replace('.', '')
             text = text.replace(',', '.')
     return text
+
 
 def notify(message, image=None):
     dialog = xbmcgui.Dialog()

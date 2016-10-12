@@ -1,3 +1,4 @@
+v0.4.7 removing duplicate function
 v0.4.6 improving conversion string to number
 v0.4.5 adding cloudflare support
 v0.4.0 user configuration filtering by title
