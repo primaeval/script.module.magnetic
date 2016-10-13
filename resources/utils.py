@@ -103,29 +103,29 @@ class Magnet:
 
 
 def get_int(text):
-    text = clean_number(text)
-    # noinspection PyBroadException
-    try:
-        value = int(re.search('([0-9]*\.[0-9]+|[0-9]+)', text).group(0))
-    except:
-        value = 0
-    return value
+    return int(get_float(text))
 
 
 def get_float(text):
-    text = clean_number(text)
-    # noinspection PyBroadException
-    try:
-        value = float(re.search('([0-9]*\.[0-9]+|[0-9]+)', text).group(0))
-    except:
-        value = 0
+    value = 0
+    if isinstance(text, (float, long, int)):
+        value = float(text)
+    elif isinstance(text, str):
+        # noinspection PyBroadException
+        try:
+            text = clean_number(text)
+            match = re.search('([0-9]*\.[0-9]+|[0-9]+)', text)
+            if match:
+                value = float(match.group(0))
+        except:
+            value = 0
     return value
 
 
 # noinspection PyBroadException
 def size_int(size_txt):
     try:
-        return int(clean_number(size_txt))
+        return int(size_txt)
     except:
         size_txt = size_txt.upper()
         size1 = size_txt.replace('B', '').replace('I', '').replace('K', '').replace('M', '').replace('G', '')
