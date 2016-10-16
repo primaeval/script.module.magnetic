@@ -291,9 +291,10 @@ def imdb_title(imdb_id):
 
 
 def clean_size(text=""):
-    pos = text.rfind('B')
-    if pos > 0:
-        text = text[:pos] + 'B'
+    if text is not None:
+        pos = text.rfind('B')
+        if pos > 0:
+            text = text[:pos] + 'B'
     return text
 
 
