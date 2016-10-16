@@ -297,6 +297,12 @@ def clean_size(text=""):
     return text
 
 
+def clean_magnet(text=""):
+    if len(text) > 0 and text[1] == '/':
+        text = Settings.url + text
+    return text
+
+
 # get the first magnet or torrent from one webpage
 def get_links(page):
     if page is None:
@@ -358,6 +364,8 @@ class MetaSettings(type):
             return get_float(mcs.value.get(item, "0"))
         elif item.endswith("_title"):
             return mcs.value.get(item, "true")
+        elif item.endswith("read_magnet_link"):
+            return mcs.value.get(item, "false")
         else:
             return mcs.value.get(item, "")
 
@@ -618,19 +626,20 @@ class Magnet:
         self.trackers = re.findall('tr=(.*?)&', self.magnet)
 
 
-def generate_payload(generator=None, read_magnet_link=False, verify_name=True, verify_size=True):
+def generate_payload(generator=None, verify_name=True, verify_size=True):
     Filtering.information()  # print filters xbmcaddon.Addon()
     results = []
     cont = 0
     for name, info_hash, magnet, size, seeds, peers in generator:
         size = clean_size(size)
+        magnet = clean_magnet(magnet)
         v_name = name if verify_name else Filtering.title
         v_size = size if verify_size else None
         log.debug("name: %s \n info_hash: %s\n magnet: %s\n size: %s\n seeds: %s\n peers: %s" % (
             name, info_hash, magnet, size, seeds, peers))
         if Filtering.verify(v_name, v_size):
             cont += 1
-            if read_magnet_link:
+            if Settings["read_magnet_link"] == "true":
                 magnet = get_links(magnet)  # magnet
             results.append({"name": name,
                             "uri": magnet,
@@ -668,7 +677,7 @@ def process(generator=None, read_magnet_link=False, verify_name=True, verify_siz
     return Filtering.results
 
 
-def execute_process(generator=None, read_magnet_link=False, verify_name=True, verify_size=True):
+def execute_process(generator=None, verify_name=True, verify_size=True):
     for query in Filtering.queries:
         keywords = read_keywords(query)
         for keyword in keywords:
@@ -730,5 +739,4 @@ def execute_process(generator=None, read_magnet_link=False, verify_name=True, ve
                 del Dialog
             log.info(url_search)
             Browser.open(url_search, post_data=payload, get_data=data)
-            Filtering.results.extend(generate_payload(generator(Browser.content),
-                                                      read_magnet_link, verify_name, verify_size))
+            Filtering.results.extend(generate_payload(generator(Browser.content), verify_name, verify_size))
