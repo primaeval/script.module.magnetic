@@ -290,6 +290,13 @@ def imdb_title(imdb_id):
     return result
 
 
+def clean_size(text=""):
+    pos = text.rfind('B')
+    if pos > 0:
+        text = text[:pos] + 'B'
+    return text
+
+
 # get the first magnet or torrent from one webpage
 def get_links(page):
     if page is None:
@@ -609,13 +616,6 @@ class Magnet:
         self.name = result.title()
         # trackers
         self.trackers = re.findall('tr=(.*?)&', self.magnet)
-
-
-def clean_size(text=""):
-    pos = text.rfind('B')
-    if pos > 0:
-        text = text[:pos]
-    return text
 
 
 def generate_payload(generator=None, read_magnet_link=False, verify_name=True, verify_size=True):
