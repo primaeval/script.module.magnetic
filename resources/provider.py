@@ -663,7 +663,7 @@ def process(generator=None, read_magnet_link=False, verify_name=True, verify_siz
     from threading import Thread
     threads = []
 
-    t = Thread(target=execute_process, args=(generator, read_magnet_link, verify_name, verify_size))
+    t = Thread(target=execute_process, args=(generator, verify_name, verify_size))
     threads.append(t)
 
     # Start all threads
