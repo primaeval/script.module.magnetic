@@ -1,3 +1,4 @@
+v0.4.9 fixing size name
 v0.4.8 changing strint to integer function
 v0.4.7 removing duplicate function
 v0.4.6 improving conversion string to number

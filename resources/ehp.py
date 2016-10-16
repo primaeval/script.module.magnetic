@@ -182,11 +182,11 @@ class Root(list):
         <class 'ehp.Root'> , b
         """
 
-        for indi in self[:]:
-            for indj in indi.sail():
-                yield (indj)
+        for i in self[:]:
+            for j in i.sail():
+                yield (j)
 
-            yield (indi)
+            yield (i)
 
     def index(self, item, **kwargs):
         """
@@ -656,11 +656,11 @@ class Root(list):
         For an example, see help(Root.remove).
         """
 
-        for indi in self[:]:
-            for indj in indi.sail_with_root():
-                yield (indj)
+        for i in self[:]:
+            for j in i.sail_with_root():
+                yield (j)
 
-            yield ((self, indi))
+            yield ((self, i))
 
     def walk(self):
         """
@@ -739,6 +739,40 @@ class Root(list):
 
         ind = self.index(y)
         self.insert(ind, k)
+
+    def parent(self, dom):
+        str_item = str(self)
+        for i, j in dom.sail_with_root():
+            if str(j) == str_item:
+                return i
+
+    def list(self, text=""):
+        result = []
+        for i in self[:]:
+            text1 = text + ' ' + str(i.name)
+            class_name = i["class"].replace(" ", ".")
+            if len(class_name) > 0:
+                text1 += "." + class_name
+            id = i["id"].replace(" ", "#")
+            if len(id) > 0:
+                text1 += "#" + id
+            if i.name != 1:
+                result.append((text1.strip(), i))
+            result.extend(i.list(text1))
+        return result
+
+    def select(self, text=""):
+        result = []
+        for i, j in self.list():
+            if i == text:
+                result.append(j)
+        return result
+
+    def get_attributes(self, text):
+        text = text.replace(' ', '').replace(';', '')
+        for i, j in self.list():
+            if text == str(j).replace(' ', ''):
+                return i
 
 
 class Tag(Root):
