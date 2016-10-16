@@ -297,10 +297,12 @@ def clean_size(text=""):
     return text
 
 
-def clean_magnet(text=""):
-    if len(text) > 0 and text[1] == '/':
-        text = Settings.url + text
-    return text
+def clean_magnet(magnet="", info_hash=""):
+    if len(magnet) > 0 and magnet[1] == '/':
+        magnet = Settings.url + magnet
+    elif len(magnet) == 0 and len(info_hash) > 0:
+        magnet = 'magnet:?xt=urn:btih:%s' % info_hash
+    return magnet
 
 
 # get the first magnet or torrent from one webpage
@@ -632,7 +634,7 @@ def generate_payload(generator=None, verify_name=True, verify_size=True):
     cont = 0
     for name, info_hash, magnet, size, seeds, peers in generator:
         size = clean_size(size)
-        magnet = clean_magnet(magnet)
+        magnet = clean_magnet(magnet, info_hash)
         v_name = name if verify_name else Filtering.title
         v_size = size if verify_size else None
         log.debug("name: %s \n info_hash: %s\n magnet: %s\n size: %s\n seeds: %s\n peers: %s" % (
@@ -659,7 +661,7 @@ def generate_payload(generator=None, verify_name=True, verify_size=True):
     return results
 
 
-def process(generator=None, read_magnet_link=False, verify_name=True, verify_size=True):
+def process(generator=None, verify_name=True, verify_size=True):
     from threading import Thread
     threads = []
 
