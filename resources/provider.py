@@ -595,8 +595,11 @@ class Filtering:
         if cls.included(name, list_to_verify, True):
             result = True
             if name is not None:
-                if not cls.included(name, cls.quality_allow) or cls.included(name, cls.quality_deny):
-                    cls.reason += ", Keyword"
+                if not cls.included(name, cls.quality_allow):
+                    cls.reason += ", Missing Accepted Keyword"
+                    result = False
+                if cls.included(name, cls.quality_deny):
+                    cls.reason += ", Blocked Keyword"
                     result = False
             if size is not None and size is not '':
                 if not cls.size_clearance(size):
