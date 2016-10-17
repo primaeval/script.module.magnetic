@@ -46,10 +46,11 @@ elif mode == 'copy':
         list_copy = (items if ret == 0 else [items[ret - 1]])
         if ret != -1 and ret <= len(items):
             for key, val in value.items():
-                for provider in list_copy:
-                    xbmcaddon.Addon(provider).setSetting(id=key, value=val)
-            xbmcgui.Dialog().ok('Magnetic',
-                                'The %s settings were copied to \n%s' % (addonid, '\n'.join(list_copy)))
+                if not key.endswith('_search') and 'read_magnet_link' not in key:
+                    for provider in list_copy:
+                        xbmcaddon.Addon(provider).setSetting(id=key, value=val)
+                xbmcgui.Dialog().ok('Magnetic',
+                                    'The %s settings were copied to \n%s' % (addonid, '\n'.join(list_copy)))
 
 
 elif mode == 'check':
