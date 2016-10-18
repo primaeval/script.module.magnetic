@@ -1,6 +1,3 @@
-import json
-import os
-import time
 import urlparse
 from threading import Thread
 from urllib import quote_plus, unquote_plus
@@ -9,12 +6,16 @@ import xbmc
 
 import filtering
 import logger
+from storage import *
 from utils import get_icon_path
 from utils import notify, get_setting
 
 provider_results = []
 available_providers = 0
 request_time = time.clock()
+
+# cache of 6h
+storage_info = Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'), 60 * 6)
 
 
 # provider call back with results
@@ -90,7 +91,16 @@ def get_results(self):
 
     if len(title) == 0 or len(method) == 0:
         return json.dumps("Payload Incomplete!!!      ") + payload
-    normalized_list = search(method, payload, provider)
+
+    # check if the search is in cache
+    database = storage_info["providers"]
+    cache = database.get(payload, None)
+    if cache is None:
+        normalized_list = search(method, payload, provider)
+        database[payload] = normalized_list
+        database.sync()
+    else:
+        normalized_list = cache
 
     logger.log.info("Filtering returned: " + str(len(normalized_list.get('magnets', []))) + " results")
     return json.dumps(normalized_list)
