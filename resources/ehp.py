@@ -94,7 +94,7 @@ class Root(list):
 
         return html
 
-    def __call__(self, tag=None, order=1, select=None, attribute='text', divider=''):
+    def __call__(self, tag=None, order=1, select=None, attribute='text', divider=('', 1)):
         """
         It returns the text for a specific tag, order and matching the attributes in select.
 
@@ -147,12 +147,12 @@ class Root(list):
                 value_attrib = value_attrib.strip()
             else:
                 value_attrib = ''
-        if divider != '':
-            result = value_attrib.split(divider)
-            if len(result) > 1:
-                return result[0].strip(), result[1].strip()
+        if divider[0] != '':
+            result = value_attrib.split(divider[0])
+            if len(result) > divider[1]:
+                return result[divider[1]].strip()
             else:
-                return 0, 0
+                return ''
         return value_attrib
 
     def __getitem__(self, item):
