@@ -7,8 +7,7 @@ import xbmc
 import filtering
 import logger
 from storage import *
-from utils import get_icon_path
-from utils import notify, get_setting
+from utils import get_icon_path, notify, get_setting
 
 provider_results = []
 available_providers = 0
@@ -95,7 +94,7 @@ def get_results(self):
     # check if the search is in cache
     database = storage_info["providers"]
     cache = database.get(payload, None)
-    if cache is None:
+    if cache is None or not get_setting('use_cache', bool):
         normalized_list = search(method, payload, provider)
         database[payload] = normalized_list
         database.sync()

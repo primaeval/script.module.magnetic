@@ -20,11 +20,24 @@ speed_providers = dict()
 mode = args.get('mode', '')
 addonid = args.get('addonid', '')
 
+
+def erase():
+    import glob, os
+
+    file_list = glob.glob("*.")
+    for f in file_list:
+        os.remove(f)
+    xbmcgui.Dialog().ok('Magnetic', 'Cache was cleared')
+
+
 if mode == 'provider':
     xbmcaddon.Addon(addonid).openSettings()
 
 elif mode == 'settings':
     xbmcaddon.Addon().openSettings()
+
+elif mode == 'clear_cache':
+    erase()
 
 elif mode == 'copy':
     path_folder = xbmcaddon.Addon(addonid).getAddonInfo('path')
@@ -49,8 +62,7 @@ elif mode == 'copy':
                 if not key.endswith('_search') and 'read_magnet_link' not in key:
                     for provider in list_copy:
                         xbmcaddon.Addon(provider).setSetting(id=key, value=val)
-                xbmcgui.Dialog().ok('Magnetic',
-                                    'The %s settings were copied to \n%s' % (addonid, '\n'.join(list_copy)))
+            xbmcgui.Dialog().ok('Magnetic', 'The %s settings were copied to \n%s' % (addonid, '\n'.join(list_copy)))
 
 
 elif mode == 'check':
