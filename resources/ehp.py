@@ -296,8 +296,10 @@ class Root(list):
         It returns the nth (order) ocurrence from the tag matching with the attributes from select
         """
         value_tag = Tag('html')
+        if isinstance(select, tuple):
+            select = [select]
         if self is not None and tag is not None:
-            values_tag = self.find(tag) if select is None else self.find(tag, select)
+            values_tag = self.find(tag) if select is None else self.find(tag, *select)
             cm = 0
             value_tag = Tag('html')
             for item_tag in values_tag:
@@ -313,8 +315,10 @@ class Root(list):
         It returns all ocurrences from the tag matching with the attributes from select
         """
         result = []
+        if isinstance(select, tuple):
+            select = [select]
         if self is not None and tag is not None:
-            elem1 = self.find(tag) if select is None else self.find(tag, select)
+            elem1 = self.find(tag) if select is None else self.find(tag, *select)
             result = list(elem1) if elem1 is not None else []
         return result
 
@@ -764,7 +768,7 @@ class Root(list):
     def select(self, text=""):
         result = []
         for i, j in self.list():
-            if i == text:
+            if i.endswith(text):
                 result.append(j)
         return result
 

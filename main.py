@@ -22,12 +22,10 @@ addonid = args.get('addonid', '')
 
 
 def erase():
-    import glob, os
-
-    file_list = glob.glob("*.")
-    for f in file_list:
-        os.remove(f)
-    xbmcgui.Dialog().ok('Magnetic', 'Cache was cleared')
+    import resources.storage
+    storage_info = resources.storage.Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'))
+    database = storage_info["providers"]
+    database.clear()
 
 
 if mode == 'provider':
