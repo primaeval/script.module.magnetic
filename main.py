@@ -26,7 +26,7 @@ def erase():
     storage_info = resources.storage.Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'))
     database = storage_info["providers"]
     database.clear()
-
+    xbmcgui.Dialog().ok('Magnetic', 'Cache Cleared!')
 
 if mode == 'provider':
     xbmcaddon.Addon(addonid).openSettings()
