@@ -142,7 +142,7 @@ class Root(list):
                 else:
                     value_attrib = value_tag.attr[attribute]
             else:
-                return '' if divider == '' else (0, 0)
+                return ''
             if value_attrib is not None:
                 value_attrib = value_attrib.strip()
             else:
