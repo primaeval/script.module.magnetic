@@ -125,7 +125,9 @@ class Root(list):
         value_attrib = ''
         if self is not None:
             if tag is not None:
-                values_tag = self.find(tag) if select is None else self.find(tag, select)
+                if isinstance(select, tuple):
+                    select = [select]
+                values_tag = self.find(tag) if select is None else self.find(tag, 1, 1, *select)
                 cm = 0
                 value_tag = None
                 for item_tag in values_tag:
@@ -243,7 +245,7 @@ class Root(list):
         index = self.index(item)
         del self[index]
 
-    def find(self, name, *args):
+    def find(self, name='', every=1, start=1, *args):
         """
         It is used to find all objects that match name.
 
@@ -279,7 +281,7 @@ class Root(list):
 
         <p style="color:green" > beta.</p>
         """
-
+        cm = start
         for ind in self.sail():
             if ind.name == name:
                 for key, values in args:
@@ -289,7 +291,9 @@ class Root(list):
                     if all(results):
                         break
                 else:
-                    yield (ind)
+                    cm += 1
+                    if cm % every == 0:
+                        yield (ind)
 
     def find_once(self, tag=None, select=None, order=1):
         """"
@@ -299,7 +303,7 @@ class Root(list):
         if isinstance(select, tuple):
             select = [select]
         if self is not None and tag is not None:
-            values_tag = self.find(tag) if select is None else self.find(tag, *select)
+            values_tag = self.find(tag) if select is None else self.find(tag, 1, 1, *select)
             cm = 0
             value_tag = Tag('html')
             for item_tag in values_tag:
@@ -310,7 +314,7 @@ class Root(list):
             value_tag = value_tag if value_tag is not None else None
         return value_tag
 
-    def find_all(self, tag=None, select=None):
+    def find_all(self, tag=None, select=None, every=1, start=1):
         """"
         It returns all ocurrences from the tag matching with the attributes from select
         """
@@ -318,7 +322,7 @@ class Root(list):
         if isinstance(select, tuple):
             select = [select]
         if self is not None and tag is not None:
-            elem1 = self.find(tag) if select is None else self.find(tag, *select)
+            elem1 = self.find(tag, every, start) if select is None else self.find(tag, every, start, *select)
             result = list(elem1) if elem1 is not None else []
         return result
 
@@ -571,7 +575,7 @@ class Root(list):
         #        else:
         #            return ind
 
-        seq = self.find(name, *args)
+        seq = self.find(name, 1, 1, *args)
 
         try:
             item = seq.next()
