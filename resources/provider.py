@@ -299,7 +299,7 @@ def clean_size(text=""):
 
 
 def clean_magnet(magnet="", info_hash=""):
-    if len(magnet) > 0 and magnet[1] == '/':
+    if len(magnet) > 0 and magnet[0] == '/':
         magnet = Settings.url + magnet
     elif len(magnet) == 0 and len(info_hash) > 0:
         magnet = 'magnet:?xt=urn:btih:%s' % info_hash

@@ -1,3 +1,4 @@
+v0.6.2 fix bug magnet
 v0.6.1 improving code
 v0.6.0 new notification time
 v0.5.7 stop calling disable providers
