@@ -575,7 +575,7 @@ class Filtering:
         value = cls.normalize(
             value)  # Last normalization, because some unicode char could appear from the previous steps
         value = value.lower().title()
-        keys = {'"': ' ', '*': ' ', '/': ' ', ':': ' ', '<': ' ', '>': ' ', '?': ' ', '|': ' ',
+        keys = {'"': ' ', '*': ' ', '/': ' ', ':': ' ', '<': ' ', '>': ' ', '?': ' ', '|': ' ', '_': ' ',
                 "'": '', 'Of': 'of', 'De': 'de', '.': ' ', ')': ' ', '(': ' ', '[': ' ', ']': ' ', '-': ' '}
         for key in keys.keys():
             value = value.replace(key, keys[key])
