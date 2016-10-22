@@ -356,8 +356,8 @@ class MetaSettings(type):
             return get_int(mcs.value.get(item, "10"))
         elif item is "separator":
             return mcs.value.get(item, "%20")
-        elif item is "time_noti":
-            return get_int(mcs.value.get(item, "750"))
+        elif item is "notification":
+            return get_int(mcs.value.get(item, "50"))
         elif item.endswith("accept"):
             temp = mcs.value.get(item, "{*}")
             return "{*}" if temp is "" else temp
@@ -735,13 +735,13 @@ def execute_process(generator=None, verify_name=True, verify_size=True):
                     else:
                         data[key] = Filtering.get_data[key]
             Filtering.title = query  # to do filtering by name
-            if Settings["time_noti"] > 0:
+            if Settings["notification"] > 0:
                 from xbmcgui import Dialog
                 dialog = Dialog()
                 dialog.notification(Settings.name_provider,
                                     query.title(),
                                     Settings.icon,
-                                    Settings["time_noti"])
+                                    Settings["notification"])
                 del Dialog
             log.info(url_search)
             Browser.open(url_search, post_data=payload, get_data=data)

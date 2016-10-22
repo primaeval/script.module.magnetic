@@ -1,3 +1,4 @@
+v0.6.0 new notification time
 v0.5.7 stop calling disable providers
 v0.5.6 fixing start in find_all
 v0.5.5 improve find functions
