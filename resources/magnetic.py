@@ -117,29 +117,25 @@ def search(method, payload_json, provider=""):
     else:
         addons = [provider]
 
-    # get magnetic addons
-    magnetic_addons = []
-    for addon in addons:
-        if "script.magnetic." in addon:
-            available_providers += 1
-            task = Thread(target=run_provider, args=(addon, method, payload_json))
-            task.start()
-            magnetic_addons.append(addon)
-
-    # return empty list
-    if len(magnetic_addons) == 0:
+    if len(addons) == 0:
+        # return empty list
         notify("No providers installed", image=get_icon_path())
         logger.log.info("No providers installed")
-        empty_list = {'results': 0, 'duration': "0 seconds", 'magnets': []}
-        return empty_list
+        return {'results': 0, 'duration': "0 seconds", 'magnets': []}
+
+    for addon in addons:
+        available_providers += 1
+        task = Thread(target=run_provider, args=(addon, method, payload_json))
+        task.start()
 
     providers_time = time.clock()
+
     # while all providers have not returned results or timeout not reached
-    while (time.clock() - providers_time) < (int(get_setting("provider_timeout")) or 60):
-        # if all providers have returned results exit
-        if available_providers == 0:
-            break
-        # check every 1000ms
+    time_out = min(get_setting("provider_timeout", int), 60)
+
+    # if all providers have returned results exit
+    # check every 1000ms
+    while time.clock() - providers_time < time_out and available_providers > 0:
         xbmc.sleep(1000)
 
     # filter magnets and append to results
