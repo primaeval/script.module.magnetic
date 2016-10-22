@@ -40,10 +40,22 @@ def get_list_providers():
                                                '"id": 1, '
                                                '"params": {"type" : "xbmc.python.script", '
                                                '"properties": ["enabled", "name", "fanart"]}}'))
-    for provider1 in list_providers["result"]["addons"]:
-        if not provider1['addonid'].startswith('script.magnetic.'):
-            continue
-        results.append(provider1)
+    for one_provider in list_providers["result"]["addons"]:
+        if one_provider['addonid'].startswith('script.magnetic.'):
+            results.append(one_provider)
+    return results
+
+
+def get_list_providers_enabled():
+    results = []
+    list_providers = loads(xbmc.executeJSONRPC('{"jsonrpc": "2.0", '
+                                               '"method": "Addons.GetAddons", '
+                                               '"id": 1, '
+                                               '"params": {"type" : "xbmc.python.script", '
+                                               '"properties": ["enabled", "name", "fanart"]}}'))
+    for one_provider in list_providers["result"]["addons"]:
+        if one_provider['addonid'].startswith('script.magnetic.') and one_provider['enabled']:
+            results.append(one_provider['addonid'])
     return results
 
 

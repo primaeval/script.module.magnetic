@@ -7,7 +7,7 @@ import xbmc
 import filtering
 import logger
 from storage import *
-from utils import get_icon_path, notify, get_setting
+from utils import get_icon_path, notify, get_setting, get_list_providers_enabled
 
 provider_results = []
 available_providers = 0
@@ -113,7 +113,7 @@ def search(method, payload_json, provider=""):
     request_time = time.clock()
     # collect data
     if len(provider) == 0:
-        addons = os.listdir(xbmc.translatePath("special://home/addons/"))
+        addons = get_list_providers_enabled()
     else:
         addons = [provider]
 
@@ -130,7 +130,7 @@ def search(method, payload_json, provider=""):
     if len(magnetic_addons) == 0:
         notify("No providers installed", image=get_icon_path())
         logger.log.info("No providers installed")
-        empty_list = {'results': 0, 'time': "0 seconds"}
+        empty_list = {'results': 0, 'duration': "0 seconds", 'magnets': []}
         return empty_list
 
     providers_time = time.clock()
