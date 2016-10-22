@@ -281,7 +281,7 @@ class Root(list):
 
         <p style="color:green" > beta.</p>
         """
-        cm = start
+        cm = 0
         for ind in self.sail():
             if ind.name == name:
                 for key, values in args:
@@ -292,7 +292,7 @@ class Root(list):
                         break
                 else:
                     cm += 1
-                    if cm % every == 0:
+                    if cm >= start and cm % every == 0:
                         yield (ind)
 
     def find_once(self, tag=None, select=None, order=1):
