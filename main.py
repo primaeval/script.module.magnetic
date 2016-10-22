@@ -103,7 +103,7 @@ if len(mode) == 0:
         speed = speed_providers.get(provider['addonid'], '')
         speed_text = '[%s]' % speed if len(speed) > 0 else ''
         list_item = xbmcgui.ListItem(label=speed + tag + name_provider)
-        icon = provider["fanart"]
+        icon = provider["thumbnail"]
         fanart = provider["fanart"]
         list_item.setArt({'thumb': icon,
                           'icon': icon,

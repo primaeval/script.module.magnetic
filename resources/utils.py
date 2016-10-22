@@ -39,7 +39,7 @@ def get_list_providers():
                                                '"method": "Addons.GetAddons", '
                                                '"id": 1, '
                                                '"params": {"type" : "xbmc.python.script", '
-                                               '"properties": ["enabled", "name", "fanart"]}}'))
+                                               '"properties": ["enabled", "name", "thumbnail", "fanart"]}}'))
     for one_provider in list_providers["result"]["addons"]:
         if one_provider['addonid'].startswith('script.magnetic.'):
             results.append(one_provider)
@@ -52,7 +52,7 @@ def get_list_providers_enabled():
                                                '"method": "Addons.GetAddons", '
                                                '"id": 1, '
                                                '"params": {"type" : "xbmc.python.script", '
-                                               '"properties": ["enabled", "name", "fanart"]}}'))
+                                               '"properties": ["enabled", "name"]}}'))
     for one_provider in list_providers["result"]["addons"]:
         if one_provider['addonid'].startswith('script.magnetic.') and one_provider['enabled']:
             results.append(one_provider['addonid'])
