@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <category label="General">
-        <setting id="provider_timeout" label="Search Timeout Seconds" type="slider" default="15" option="int"
+        <setting id="timeout" label="Search Timeout Seconds" type="slider" default="10" option="int"
                  range="1,1,60"/>
         <setting id="use_cache" type="bool" label="Use Cache" default="true"/>
         <setting label="Clear Cache" type="action" action="RunPlugin(plugin://script.module.magnetic?mode=clear_cache)"/>

@@ -8,7 +8,7 @@ import xbmcgui
 import filtering
 import logger
 from storage import *
-from utils import get_icon_path, notify, get_setting, get_list_providers_enabled, ADDON_ICON
+from utils import get_icon_path, notify, get_setting, get_list_providers_enabled
 
 provider_results = []
 available_providers = 0
@@ -136,7 +136,7 @@ def search(method, payload_json, provider=""):
     total = float(available_providers)
 
     # while all providers have not returned results or timeout not reached
-    time_out = min(get_setting("provider_timeout", int), 60)
+    time_out = min(get_setting("timeout", int), 60)
 
     # if all providers have returned results exit
     # check every 100ms
