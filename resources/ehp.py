@@ -1149,7 +1149,7 @@ class Html(HTMLParser):
         """
 
         self.struct.clear()
-        HTMLParser.feed(self, data)
+        HTMLParser.feed(self, normalize2(data))
 
         return self.struct.outmost
 

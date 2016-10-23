@@ -70,7 +70,7 @@ def filter_quality(results_list):
 # apply sorting based on seeds and quality
 # noinspection PyBroadException
 def sort_by_quality(results_list):
-    logger.log.info("Applying quality sorting")
+    logger.log.debug("Applying quality sorting")
     for result in results_list:
         try:
             # seeding level

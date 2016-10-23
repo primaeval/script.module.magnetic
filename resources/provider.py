@@ -174,7 +174,7 @@ class Browser:
             post_data = {}
         if get_data is not None:
             url += '?' + urlencode(get_data)
-        log.info(url)
+        log.debug(url)
         result = True
         if len(post_data) > 0:
             cls.create_cookies(post_data)
@@ -498,10 +498,10 @@ class Filtering:
 
     @classmethod
     def information(cls):
-        log.info('Accepted Keywords: %s' % cls.quality_allow)
-        log.info('Blocked Keywords: %s' % cls.quality_deny)
-        log.info('min Size: %s' % str(cls.min_size) + ' GB')
-        log.info('max Size: %s' % ((str(cls.max_size) + ' GB') if cls.max_size != 10 else 'MAX'))
+        log.debug('Accepted Keywords: %s' % cls.quality_allow)
+        log.debug('Blocked Keywords: %s' % cls.quality_deny)
+        log.debug('min Size: %s' % str(cls.min_size) + ' GB')
+        log.debug('max Size: %s' % ((str(cls.max_size) + ' GB') if cls.max_size != 10 else 'MAX'))
 
     # validate keywords
     @staticmethod
@@ -660,8 +660,8 @@ def generate_payload(generator=None, verify_name=True, verify_size=True):
             if cont >= Settings["max_magnets"]:  # limit magnets
                 break
         else:
-            log.warning(Filtering.reason)
-    log.info('>>>>>>' + str(cont) + ' torrents sent to Magnetic<<<<<<<')
+            log.debug(Filtering.reason)
+    log.debug('>>>>>>' + str(cont) + ' torrents sent to Magnetic<<<<<<<')
     return results
 
 
@@ -735,14 +735,6 @@ def execute_process(generator=None, verify_name=True, verify_size=True):
                     else:
                         data[key] = Filtering.get_data[key]
             Filtering.title = query  # to do filtering by name
-            if Settings["notification"] > 0:
-                from xbmcgui import Dialog
-                dialog = Dialog()
-                dialog.notification(Settings.name_provider,
-                                    query.title(),
-                                    Settings.icon,
-                                    Settings["notification"])
-                del Dialog
-            log.info(url_search)
+            log.debug(url_search)
             Browser.open(url_search, post_data=payload, get_data=data)
             Filtering.results.extend(generate_payload(generator(Browser.content), verify_name, verify_size))

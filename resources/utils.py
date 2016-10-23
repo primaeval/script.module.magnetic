@@ -11,6 +11,7 @@ import xbmcgui
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo("id")
+ADDON_ICON = ADDON.getAddonInfo("icon")
 ADDON_NAME = ADDON.getAddonInfo("name")
 ADDON_VERSION = ADDON.getAddonInfo("version")
 PATH_ADDONS = xbmc.translatePath("special://home/addons/")

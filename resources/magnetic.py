@@ -3,11 +3,12 @@ from threading import Thread
 from urllib import quote_plus, unquote_plus
 
 import xbmc
+import xbmcgui
 
 import filtering
 import logger
 from storage import *
-from utils import get_icon_path, notify, get_setting, get_list_providers_enabled
+from utils import get_icon_path, notify, get_setting, get_list_providers_enabled, ADDON_ICON
 
 provider_results = []
 available_providers = 0
@@ -28,7 +29,7 @@ def process_provider(self):
     self._write_headers()
     self.wfile.write("OK")
     data = json.loads(payload)
-    logger.log.info("Provider " + addonid + " returned " + str(len(data)) + " results in " + str(
+    logger.log.debug("Provider " + addonid + " returned " + str(len(data)) + " results in " + str(
         "%.1f" % round(time.clock() - request_time, 2)) + " seconds")
     if len(data) > 0:
         if len(provider_results) == 0:
@@ -101,7 +102,7 @@ def get_results(self):
     else:
         normalized_list = cache
 
-    logger.log.info("Filtering returned: " + str(len(normalized_list.get('magnets', []))) + " results")
+    logger.log.debug("Filtering returned: " + str(len(normalized_list.get('magnets', []))) + " results")
     return json.dumps(normalized_list)
 
 
@@ -120,8 +121,11 @@ def search(method, payload_json, provider=""):
     if len(addons) == 0:
         # return empty list
         notify("No providers installed", image=get_icon_path())
-        logger.log.info("No providers installed")
+        logger.log.debug("No providers installed")
         return {'results': 0, 'duration': "0 seconds", 'magnets': []}
+
+    p_dialog = xbmcgui.DialogProgressBG()
+    p_dialog.create('Magnetic', 'Starting...')
 
     for addon in addons:
         available_providers += 1
@@ -129,14 +133,20 @@ def search(method, payload_json, provider=""):
         task.start()
 
     providers_time = time.clock()
+    total = float(available_providers)
 
     # while all providers have not returned results or timeout not reached
     time_out = min(get_setting("provider_timeout", int), 60)
 
     # if all providers have returned results exit
-    # check every 1000ms
+    # check every 100ms
     while time.clock() - providers_time < time_out and available_providers > 0:
-        xbmc.sleep(1000)
+        xbmc.sleep(100)
+        p_dialog.update(int((total - available_providers) / total * 100), message='Finding links...')
+
+    # destroy notification object
+    p_dialog.close()
+    del p_dialog
 
     # filter magnets and append to results
     filtered_results = dict(magnets=filtering.apply_filters(provider_results))
@@ -144,13 +154,13 @@ def search(method, payload_json, provider=""):
     # append number and time on payload
     filtered_results['results'] = len(filtered_results['magnets'])
     filtered_results['duration'] = str("%.1f" % round(time.clock() - request_time, 2)) + " seconds"
-    logger.log.info(
+    logger.log.debug(
         "Providers search returned: %s results in %s" % (str(len(provider_results)), filtered_results['duration']))
     return filtered_results
 
 
 # run provider script
 def run_provider(addon, method, search_query):
-    logger.log.info("Processing:" + addon)
+    logger.log.debug("Processing:" + addon)
     xbmc.executebuiltin(
         "RunScript(" + addon + "," + addon + "," + method + "," + quote_plus(search_query.encode('utf-8')) + ")", True)
