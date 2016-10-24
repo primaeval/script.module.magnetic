@@ -197,8 +197,11 @@ class Browser:
                 cls.content = response.read()
             response.close()
             cls.status = 200
+            log.debug("Status: " + str(cls.status))
+            log.debug(cls.content)
         except urllib2.HTTPError as e:
             cls.status = e.code
+            log.warning("Status: " + str(cls.status))
             result = False
             if e.code == 503:
                 # trying to open with antibots tool
@@ -206,12 +209,12 @@ class Browser:
                 scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
                 cls.content = scraper.get(url).content
                 cls.status = 200
+                log.warning("Trying antibot's messure")
                 result = True
         except urllib2.URLError as e:
             cls.status = e.reason
+            log.warning("Status: " + str(cls.status))
             result = False
-        log.debug("Status: " + str(cls.status))
-        log.debug(cls.content)
         return result
 
     # alternative when it is problem with https
