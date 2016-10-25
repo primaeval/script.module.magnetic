@@ -316,14 +316,13 @@ def get_links(page):
     else:
         if page[:1] is '/':
             page = Settings.url + page
-        browser = Browser()
         result = ""
-        if browser.open(quote(page).replace("%3A", ":")):
-            content = re.findall('magnet:\?[^\'"\s<>\[\]]+', browser.content)
+        if Browser.open(quote(page).replace("%3A", ":")):
+            content = re.findall('magnet:\?[^\'"\s<>\[\]]+', Browser.content)
             if content is not None and len(content) > 0:
                 result = content[0]
             else:
-                content = re.findall('http(.*?).torrent', browser.content)
+                content = re.findall('http(.*?).torrent', Browser.content)
                 if content is not None and len(content) > 0:
                     result = 'http' + content[0] + '.torrent'
     return result
