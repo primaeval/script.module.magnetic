@@ -157,6 +157,12 @@ def search(method, payload_json, provider=""):
     filtered_results['duration'] = str("%.1f" % round(time.clock() - request_time, 2)) + " seconds"
     logger.log.debug(
         "Providers search returned: %s results in %s" % (str(len(provider_results)), filtered_results['duration']))
+
+    # reset global variables
+    provider_results = []
+    available_providers = 0
+    request_time = time.clock()
+
     return filtered_results
 
 
