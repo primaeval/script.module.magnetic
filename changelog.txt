@@ -1,3 +1,4 @@
+v0.6.6 reorder reset
 v0.6.5 fix total providers
 v0.6.4 adding smart spider
 v0.6.3 changing dialogs

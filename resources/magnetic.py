@@ -111,7 +111,12 @@ def search(method, payload_json, provider=""):
     global provider_results
     global available_providers
     global request_time
+
+    # reset global variables
+    provider_results = []
+    available_providers = 0
     request_time = time.clock()
+
     # collect data
     if len(provider) == 0:
         addons = get_list_providers_enabled()
@@ -125,7 +130,7 @@ def search(method, payload_json, provider=""):
         return {'results': 0, 'duration': "0 seconds", 'magnets': []}
 
     p_dialog = xbmcgui.DialogProgressBG()
-    p_dialog.create('Magnetic', 'Starting...')
+    p_dialog.create('Magnetic Manager', 'Starting...')
 
     for addon in addons:
         available_providers += 1
@@ -142,12 +147,8 @@ def search(method, payload_json, provider=""):
     # check every 100ms
     while time.clock() - providers_time < time_out and available_providers > 0:
         xbmc.sleep(100)
-        message = '%s providers left...' % available_providers if available_providers > 1 else "1 provider left..."
+        message = '%s Providers Left' % available_providers if available_providers > 1 else "1 Provider Left"
         p_dialog.update(int((total - available_providers) / total * 100), message=message)
-
-    # destroy notification object
-    p_dialog.close()
-    del p_dialog
 
     # filter magnets and append to results
     filtered_results = dict(magnets=filtering.apply_filters(provider_results))
@@ -158,10 +159,9 @@ def search(method, payload_json, provider=""):
     logger.log.debug(
         "Providers search returned: %s results in %s" % (str(len(provider_results)), filtered_results['duration']))
 
-    # reset global variables
-    provider_results = []
-    available_providers = 0
-    request_time = time.clock()
+    # destroy notification object
+    p_dialog.close()
+    del p_dialog
 
     return filtered_results
 
