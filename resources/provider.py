@@ -8,6 +8,7 @@ import sys
 import urllib2
 from cookielib import CookieJar, LWPCookieJar
 from os import path
+from time import sleep
 from urllib import unquote_plus, urlencode, quote
 from urlparse import urlparse
 
@@ -15,8 +16,8 @@ import xbmcaddon
 
 from ehp import *
 from logger import log
-from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
 from utils import ADDON, get_int, get_float
+from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36" \
              " (KHTML, like Gecko) Chrome/30.0.1599.66 Safari/537.36"
@@ -738,5 +739,6 @@ def execute_process(generator=None, verify_name=True, verify_size=True):
                         data[key] = Filtering.get_data[key]
             Filtering.title = query  # to do filtering by name
             log.debug(url_search)
+            sleep(0.5)
             Browser.open(url_search, post_data=payload, get_data=data)
             Filtering.results.extend(generate_payload(generator(Browser.content), verify_name, verify_size))

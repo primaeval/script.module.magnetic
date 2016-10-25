@@ -142,7 +142,8 @@ def search(method, payload_json, provider=""):
     # check every 100ms
     while time.clock() - providers_time < time_out and available_providers > 0:
         xbmc.sleep(100)
-        p_dialog.update(int((total - available_providers) / total * 100), message='Finding links...')
+        message = '%s providers left...' % available_providers if available_providers > 1 else "1 provider left..."
+        p_dialog.update(int((total - available_providers) / total * 100), message=message)
 
     # destroy notification object
     p_dialog.close()
