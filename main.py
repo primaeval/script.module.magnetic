@@ -28,6 +28,7 @@ def erase():
     database.clear()
     xbmcgui.Dialog().ok('Magnetic', 'Cache Cleared!')
 
+
 if mode == 'provider':
     xbmcaddon.Addon(addonid).openSettings()
 
@@ -86,6 +87,17 @@ elif mode == 'disable_all':
         utils.disable_provider(provider['addonid'])
     xbmc.executebuiltin("Container.Refresh")
 
+elif mode == 'defaults_all':
+    import shutil
+    import os.path
+
+    base_path = xbmc.translatePath('special://userdata/addon_data')
+    for provider in utils.get_list_providers():
+        folder = path.join(base_path, provider['addonid'])
+        if os.path.isfile(folder):
+            shutil.rmtree(folder)
+    xbmcgui.Dialog().ok('Magnetic', 'Defaults settings applied')
+
 if len(mode) == 0:
     # creation menu
     for provider in utils.get_list_providers():
@@ -123,6 +135,8 @@ if len(mode) == 0:
                                        ('Copy Settings To...',
                                         'XBMC.RunPlugin(plugin://script.module.magnetic?mode=copy&addonid=%s)' %
                                         provider['addonid']),
+                                       ('Apply default values',
+                                        'XBMC.RunPlugin(plugin://script.module.magnetic?mode=defaults_all)'),
                                        ('Add-on Settings',
                                         'XBMC.RunPlugin(plugin://script.module.magnetic?mode=settings)')],
                                       replaceItems=True)
