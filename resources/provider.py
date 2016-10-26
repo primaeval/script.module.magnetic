@@ -189,6 +189,7 @@ class Browser:
         req.add_header("Accept-Encoding", "gzip")
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cls.cookies))  # open cookie jar
         try:
+            sleep(0.5)  # good spider
             response = opener.open(req)  # send cookies and open url
             # borrow from provider.py Steeve
             if response.headers.get("Content-Encoding", "") == "gzip":
@@ -206,6 +207,7 @@ class Browser:
             result = False
             if e.code == 503:
                 # trying to open with antibots tool
+                sleep(0.5)  # good spider
                 import cfscrape
                 scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
                 cls.content = scraper.get(url).content
@@ -739,6 +741,5 @@ def execute_process(generator=None, verify_name=True, verify_size=True):
                         data[key] = Filtering.get_data[key]
             Filtering.title = query  # to do filtering by name
             log.debug(url_search)
-            sleep(0.5)
             Browser.open(url_search, post_data=payload, get_data=data)
             Filtering.results.extend(generate_payload(generator(Browser.content), verify_name, verify_size))
