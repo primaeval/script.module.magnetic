@@ -16,7 +16,7 @@ import xbmcaddon
 
 from ehp import *
 from logger import log
-from utils import ADDON, get_int, get_float
+from utils import get_setting, get_int, get_float
 from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36" \
@@ -54,103 +54,6 @@ def register(search, search_movie, search_episode, search_season):
 
     request_url = urllib2.Request(callback, results)
     urllib2.urlopen(request_url, timeout=60)
-
-
-class closing(object):
-    def __init__(self, thing):
-        self.thing = thing
-
-    def __enter__(self):
-        return self.thing
-
-    def __exit__(self):
-        self.thing.close()
-
-
-def parse_json(data):
-    import json
-    return json.loads(data)
-
-
-def parse_xml(data):
-    import xml.etree.ElementTree as eT
-    return eT.fromstring(data)
-
-
-def request(url, params=None, headers=None, data=None, method=None):
-    if headers is None:
-        headers = {}
-    if params is None:
-        params = {}
-    if params:
-        url = "".join([url, "?", urlencode(params)])
-
-    req = urllib2.Request(url)
-    if method:
-        req.get_method = lambda: method
-    req.add_header("User-Agent", USER_AGENT)
-    req.add_header("Accept-Encoding", "gzip")
-    for k, v in headers.items():
-        req.add_header(k, v)
-    if data:
-        req.add_data(data)
-    try:
-        with closing(urllib2.urlopen(req)) as response:
-            data = response.read()
-            if response.headers.get("Content-Encoding", "") == "gzip":
-                import zlib
-                data = zlib.decompressobj(16 + zlib.MAX_WBITS).decompress(data)
-            response.data = data
-            response.json = lambda: parse_json(data)
-            response.xml = lambda: parse_xml(data)
-            return response
-    except urllib2.HTTPError, e:
-        log.error("http error: %s => %d %s" % (url, e.code, e.reason))
-        return None, None
-
-
-# Borrowed from xbmcswift2
-def get_setting(key, converter=str, choices=None):
-    value = ADDON.getSetting(id=key)
-    if converter is str:
-        return value
-    elif converter is unicode:
-        return value.decode('utf-8')
-    elif converter is bool:
-        return value == 'true'
-    elif converter is int:
-        return int(value)
-    elif isinstance(choices, (list, tuple)):
-        return choices[int(value)]
-    else:
-        raise TypeError('Acceptable converters are str, unicode, bool and '
-                        'int. Acceptable choices are instances of list '
-                        ' or tuple.')
-
-
-# noinspection PyPep8Naming
-def HEAD(*args, **kwargs):
-    return request(*args, method="HEAD", **kwargs)
-
-
-# noinspection PyPep8Naming
-def GET(*args, **kwargs):
-    return request(*args, method="GET", **kwargs)
-
-
-# noinspection PyPep8Naming
-def POST(*args, **kwargs):
-    return request(*args, method="POST", **kwargs)
-
-
-# noinspection PyPep8Naming
-def PUT(*args, **kwargs):
-    return request(*args, method="PUT", **kwargs)
-
-
-# noinspection PyPep8Naming
-def DELETE(*args, **kwargs):
-    return request(*args, method="DELETE", **kwargs)
 
 
 # provider web browser with cookies management
