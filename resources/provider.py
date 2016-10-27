@@ -27,7 +27,7 @@ urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(COOKIES)
 
 
 # noinspection PyBroadException
-def register(search, search_movie, search_episode, search_season, download=None):
+def register(search, search_movie, search_episode, search_season):
     if len(sys.argv) < 4:
         xbmcaddon.Addon().openSettings()
         return
@@ -38,8 +38,7 @@ def register(search, search_movie, search_episode, search_season, download=None)
         "search": search,
         "search_movie": search_movie,
         "search_episode": search_episode,
-        "search_season": search_season,
-        "download": download
+        "search_season": search_season
     }.get(method)
 
     # post to service magnet results
