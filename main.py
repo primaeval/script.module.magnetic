@@ -8,6 +8,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcplugin
 
+import resources.storage
 import resources.utils as utils
 
 base_url = sys.argv[0]
@@ -15,15 +16,14 @@ addon_handle = int(sys.argv[1])
 args = dict(parse_qsl(sys.argv[2][1:]))
 
 listing = []
-speed_providers = dict()
+storage_info = resources.storage.Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'))
+speed_providers = storage_info["speed"]
 
 mode = args.get('mode', '')
 addonid = args.get('addonid', '')
 
 
 def erase():
-    import resources.storage
-    storage_info = resources.storage.Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'))
     database = storage_info["providers"]
     database.clear()
     xbmcgui.Dialog().ok('Magnetic', 'Cache Cleared!')
@@ -66,8 +66,22 @@ elif mode == 'copy':
 
 elif mode == 'check':
     speed_providers[addonid] = utils.check_provider(addonid)
-    xbmcgui.Dialog().ok('Magnetic', '%s takes %s to get results' % (addonid, speed_providers[addonid]))
-    mode = ''
+    speed_providers.sync()
+    xbmc.executebuiltin("Container.Refresh")
+
+elif mode == 'check_all':
+    from xbmcgui import Dialog
+
+    dialog = Dialog()
+    for provider in utils.get_list_providers():
+        if provider['enabled']:
+            dialog.notification(provider['name'],
+                                "Checking speed",
+                                provider['thumbnail'])
+            speed_providers[provider['addonid']] = utils.check_provider(provider['addonid'])
+            speed_providers.sync()
+    del dialog
+    xbmc.executebuiltin("Container.Refresh")
 
 elif mode == 'enable':
     utils.enable_provider(addonid)
@@ -113,8 +127,8 @@ if len(mode) == 0:
                            provider['addonid'])
             menu_check = []
         speed = speed_providers.get(provider['addonid'], '')
-        speed_text = '[%s]' % speed if len(speed) > 0 else ''
-        list_item = xbmcgui.ListItem(label=speed + tag + name_provider)
+        speed_text = ' [%s]' % speed if speed != '' else ''
+        list_item = xbmcgui.ListItem(label=tag + name_provider + speed_text)
         icon = provider["thumbnail"]
         fanart = provider["fanart"]
         list_item.setArt({'thumb': icon,
@@ -126,7 +140,8 @@ if len(mode) == 0:
             url = ''
         is_folder = False
         list_item.addContextMenuItems(menu_check +
-                                      [('Check All', 'Container.Refresh'),
+                                      [('Check All',
+                                        'XBMC.RunPlugin(plugin://script.module.magnetic?mode=check_all)'),
                                        menu_enable,
                                        ('Enable All',
                                         'XBMC.RunPlugin(plugin://script.module.magnetic?mode=enable_all)'),

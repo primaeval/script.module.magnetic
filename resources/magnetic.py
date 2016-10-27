@@ -96,7 +96,7 @@ def get_results(self):
     database = storage_info["providers"]
     cache = database.get(payload, None)
 
-    if cache is None or not get_setting('use_cache', bool):
+    if cache is None or not get_setting('use_cache', bool) or len(provider) > 0:
         normalized_list = search(method, payload, provider)
         database[payload] = normalized_list
         database.sync()

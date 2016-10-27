@@ -1,3 +1,4 @@
+v0.6.9 speed checking
 v0.6.8 removing unused code
 v0.6.7 good spider
 v0.6.6 reorder reset
