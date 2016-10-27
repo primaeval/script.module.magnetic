@@ -53,6 +53,7 @@ def get_results(self):
     operation = info.get('search', [''])[0]
     provider = info.get('provider', [''])[0]
     title = unquote_plus(str(info.get('title', [''])[0]).replace("'", ""))
+    file_name = info.get('download', [''])[0]
 
     if operation == 'general':
         method = 'search'
@@ -86,6 +87,12 @@ def get_results(self):
                        'absolute_number': int(0)}
         payload = json.dumps(season_item)
 
+    elif len(file_name) > 0:
+        method = "download"
+        title = file_name
+        download_item = {'page': file_name}
+        payload = json.dumps(download_item)
+
     else:
         return json.dumps("OPERATION NOT FOUND")
 
@@ -103,7 +110,7 @@ def get_results(self):
         normalized_list = cache
 
     logger.log.debug("Filtering returned: " + str(len(normalized_list.get('magnets', []))) + " results")
-    return json.dumps(normalized_list)
+    return json.dumps(normalized_list) if 'download' not in method else normalized_list.get("magnets", [""])[0]
 
 
 # search for torrents - call providers
