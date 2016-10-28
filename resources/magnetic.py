@@ -2,13 +2,10 @@ import urlparse
 from threading import Thread
 from urllib import quote_plus, unquote_plus
 
-import xbmc
-import xbmcgui
-
 import filtering
 import logger
 from storage import *
-from utils import get_icon_path, notify, get_setting, get_list_providers_enabled
+from utils import *
 
 provider_results = []
 available_providers = 0
@@ -102,6 +99,7 @@ def get_results(self):
         database.sync()
     else:
         normalized_list = cache
+        display_message_cache()
 
     logger.log.debug("Filtering returned: " + str(len(normalized_list.get('magnets', []))) + " results")
     return json.dumps(normalized_list)

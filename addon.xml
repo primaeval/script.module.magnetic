@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.magnetic" name="[COLOR FFffd800]Magnetic[/COLOR] Torrent Manager" version="0.6.9"
+<addon id="script.module.magnetic" name="[COLOR FFffd800]Magnetic[/COLOR] Torrent Manager" version="0.7.0"
        provider-name="mancuniancol">
     <requires>
         <import addon="xbmc.python" version="2.5.0"/>

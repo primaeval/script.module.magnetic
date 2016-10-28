@@ -168,3 +168,17 @@ def notify(message, image=None):
     dialog = xbmcgui.Dialog()
     dialog.notification(ADDON_NAME, message, icon=image)
     del dialog
+
+
+def display_message_cache():
+    p_dialog = xbmcgui.DialogProgressBG()
+    p_dialog.create('Magnetic Manager', 'Starting...')
+    xbmc.sleep(250)
+    p_dialog.update(25, 'Copying from cache')
+    xbmc.sleep(250)
+    p_dialog.update(50, 'Copying from cache')
+    xbmc.sleep(250)
+    p_dialog.update(75, 'Copying from cache')
+    xbmc.sleep(250)
+    del p_dialog
+
