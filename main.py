@@ -77,9 +77,10 @@ elif mode == 'check_all':
         if provider['enabled']:
             dialog.notification(provider['name'],
                                 "Checking speed",
-                                provider['thumbnail'])
+                                provider['thumbnail'], 10000)
             speed_providers[provider['addonid']] = utils.check_provider(provider['addonid'])
             speed_providers.sync()
+    dialog.notification('Magnetic', 'Done!', time=50)
     del dialog
     xbmc.executebuiltin("Container.Refresh")
 
