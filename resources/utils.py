@@ -180,5 +180,6 @@ def display_message_cache():
     xbmc.sleep(250)
     p_dialog.update(75, 'Copying from cache')
     xbmc.sleep(250)
+    p_dialog.close()
     del p_dialog
 
