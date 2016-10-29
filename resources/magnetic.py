@@ -30,13 +30,13 @@ def process_provider(self):
     logger.log.info("Provider " + addonid + " returned " + str(len(data)) + " results in " + str(
         "%.1f" % round(time.clock() - request_time, 2)) + " seconds")
     if len(data) > 0:
-        provider_name.remove(addonid)
         if len(provider_results) == 0:
             provider_results = data
         else:
             for item in data:
                 provider_results.append(item)
     available_providers -= 1
+    provider_name.remove(addonid)
 
 
 def get_results(self):
@@ -113,9 +113,11 @@ def search(method, payload_json, provider=""):
     global provider_results
     global available_providers
     global request_time
+    global provider_name
 
     # reset global variables
     provider_results = []
+    provider_name = []
     available_providers = 0
     request_time = time.clock()
 
