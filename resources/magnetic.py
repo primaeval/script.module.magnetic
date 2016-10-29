@@ -155,8 +155,8 @@ def search(method, payload_json, provider=""):
 
     # time-out provider
     if len(provider_name) > 0:
-        message = ', '.join(provider_name).title()
-        message = message.replace('script.magnetic.', '') + ' working slow'
+        message = ', '.join(provider_name)
+        message = message.replace('script.magnetic.', '').title() + ' working slow'
         logger.log.info(message)
         notify(message, ADDON_ICON)
 
