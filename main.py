@@ -26,19 +26,22 @@ addonid = args.get('addonid', '')
 def erase():
     database = storage_info["providers"]
     database.clear()
-    xbmcgui.Dialog().ok('Magnetic', 'Cache Cleared!')
 
 
 if mode == 'provider':
+    erase()
     xbmcaddon.Addon(addonid).openSettings()
 
 elif mode == 'settings':
+    erase()
     xbmcaddon.Addon().openSettings()
 
 elif mode == 'clear_cache':
     erase()
+    xbmcgui.Dialog().ok('Magnetic', 'Cache Cleared!')
 
 elif mode == 'copy':
+    erase()
     path_folder = xbmcaddon.Addon(addonid).getAddonInfo('path')
     value = dict()  # it contains all the settings from xml file
     fileName = path.join(path_folder, "resources", "settings.xml")
@@ -85,14 +88,17 @@ elif mode == 'check_all':
     xbmc.executebuiltin("Container.Refresh")
 
 elif mode == 'enable':
+    erase()
     utils.enable_provider(addonid)
     xbmc.executebuiltin("Container.Refresh")
 
 elif mode == 'disable':
+    erase()
     utils.disable_provider(addonid)
     xbmc.executebuiltin("Container.Refresh")
 
 elif mode == 'enable_all':
+    erase()
     for provider in utils.get_list_providers():
         utils.enable_provider(provider['addonid'])
     xbmc.executebuiltin("Container.Refresh")
@@ -106,6 +112,7 @@ elif mode == 'defaults_all':
     import shutil
     import os.path
 
+    erase()
     base_path = xbmc.translatePath('special://userdata/addon_data')
     for provider in utils.get_list_providers():
         folder = path.join(base_path, provider['addonid'])

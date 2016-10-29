@@ -11,9 +11,6 @@ provider_results = []
 available_providers = 0
 request_time = time.clock()
 
-# cache of 6h
-storage_info = Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'), 60 * 6)
-
 
 # provider call back with results
 def process_provider(self):
@@ -90,6 +87,7 @@ def get_results(self):
         return json.dumps("Payload Incomplete!!!      ") + payload
 
     # check if the search is in cache
+    storage_info = Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'), 60 * 6, True)
     database = storage_info["providers"]
     cache = database.get(payload, None)
 

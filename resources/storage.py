@@ -208,15 +208,17 @@ class Storage:
     _unsynced_storages = {}
     _storage_path = ""
     _TLL = None
+    _force = False
 
-    def __init__(self, storage_path="", ttl=60 * 24):
+    def __init__(self, storage_path="", ttl=60 * 24, force=False):
         self._TTL = ttl
+        self._force = force
         self._storage_path = os.path.join(storage_path, ".storage")
         if not os.path.isdir(self._storage_path):
             os.makedirs(self._storage_path)
 
     def __getitem__(self, item):
-        return self.get_storage(name=item, ttl=self._TTL)
+        return self.get_storage(name=item, ttl=self._TTL, force=self._force)
 
     def cached(self, ttl=60 * 24):
         """A decorator that will cache the output of the wrapped function. The
@@ -273,7 +275,7 @@ class Storage:
         return [name for name in os.listdir(self._storage_path)
                 if not name.startswith('.')]
 
-    def get_storage(self, name='main', file_format='pickle', ttl=None):
+    def get_storage(self, name='main', file_format='pickle', ttl=None, force=False):
         """Returns a storage for the given name. The returned storage is a
         fully functioning python dictionary and is designed to be used that
         way. It is usually not necessary for the caller to load or save the
@@ -295,12 +297,15 @@ class Storage:
                     storage is loaded form disk, it is possible to call
                     get_storage() with a different TTL than when the storage was
                     created. The currently specified TTL is always honored.
+        :param force: if it reads always from the disk
         """
 
         if not hasattr(self, '_unsynced_storages'):
             self._unsynced_storages = {}
         filename = os.path.join(self._storage_path, name)
         try:
+            if force:
+                raise KeyError
             storage = self._unsynced_storages[filename]
             log.debug('Loaded storage "%s" from memory', name)
         except KeyError:
