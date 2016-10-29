@@ -13,7 +13,6 @@ import json
 import os
 import time
 from datetime import timedelta
-from functools import wraps
 
 try:
     import cPickle as pickle
@@ -204,78 +203,35 @@ class TimedStorage(_Storage):
 
 
 class Storage:
-    _function_cache_name = '.functions'
     _unsynced_storages = {}
     _storage_path = ""
-    _TLL = None
+    _TTL = None
     _force = False
 
-    def __init__(self, storage_path="", ttl=60 * 24, force=False):
-        self._TTL = ttl
-        self._force = force
-        self._storage_path = os.path.join(storage_path, ".storage")
-        if not os.path.isdir(self._storage_path):
-            os.makedirs(self._storage_path)
+    @classmethod
+    def __init__(cls, storage_path="", ttl=60 * 24, force=False):
+        cls._TTL = ttl
+        cls._force = force
+        cls._storage_path = os.path.join(storage_path, ".storage")
+        if not os.path.isdir(cls._storage_path):
+            os.makedirs(cls._storage_path)
 
-    def __getitem__(self, item):
-        return self.get_storage(name=item, ttl=self._TTL, force=self._force)
+    @classmethod
+    def open(cls, item):
+        return cls.__get_storage(name=item, ttl=cls._TTL, force=cls._force)
 
-    def cached(self, ttl=60 * 24):
-        """A decorator that will cache the output of the wrapped function. The
-        key used for the cache is the function name as well as the `*args` and
-        `**kwargs` passed to the function.
-
-        :param ttl: time to live in minutes
-
-        .. note:: For route caching, you should use
-                  :meth:`xbmcswift2.Plugin.cached_route`.
-        """
-
-        def decorating_function(function):
-            storage = self.get_storage(self._function_cache_name, file_format='pickle', ttl=ttl)
-            kwd_mark = 'f35c2d973e1bbbc61ca60fc6d7ae4eb3'
-
-            @wraps(function)
-            def wrapper(*args, **kwargs):
-                key = (function.__name__, kwd_mark,) + args
-                if kwargs:
-                    key += (kwd_mark,) + tuple(sorted(kwargs.items()))
-
-                try:
-                    result = storage[key]
-                    log.debug('Storage hit for function "%s" with args "%s" '
-                              'and kwargs "%s"', function.__name__, args,
-                              kwargs)
-                except KeyError:
-                    log.debug('Storage miss for function "%s" with args "%s" '
-                              'and kwargs "%s"', function.__name__, args,
-                              kwargs)
-                    result = function(*args, **kwargs)
-                    storage[key] = result
-                    storage.sync()
-                return result
-
-            return wrapper
-
-        return decorating_function
-
-    def clear_function_cache(self):
-        """Clears the storage that caches results when using
-        :meth:`xbmcswift2.Plugin.cached_route` or
-        :meth:`xbmcswift2.Plugin.cached`.
-        """
-        self.get_storage(self._function_cache_name).clear()
-
-    def list_storages(self):
+    @classmethod
+    def list_storages(cls):
         """Returns a list of existing stores. The returned names can then be
         used to call get_storage().
         """
-        # Filter out any storages used by xbmcswift2 so caller doesn't corrupt
+        # Filter out any storages used by xbmc swift2 so caller doesn't corrupt
         # them.
-        return [name for name in os.listdir(self._storage_path)
+        return [name for name in os.listdir(cls._storage_path)
                 if not name.startswith('.')]
 
-    def get_storage(self, name='main', file_format='pickle', ttl=None, force=False):
+    @classmethod
+    def __get_storage(cls, name='main', file_format='pickle', ttl=None, force=False):
         """Returns a storage for the given name. The returned storage is a
         fully functioning python dictionary and is designed to be used that
         way. It is usually not necessary for the caller to load or save the
@@ -300,13 +256,13 @@ class Storage:
         :param force: if it reads always from the disk
         """
 
-        if not hasattr(self, '_unsynced_storages'):
-            self._unsynced_storages = {}
-        filename = os.path.join(self._storage_path, name)
+        if not hasattr(cls, '_unsynced_storages'):
+            cls._unsynced_storages = {}
+        filename = os.path.join(cls._storage_path, name)
         try:
             if force:
                 raise KeyError
-            storage = self._unsynced_storages[filename]
+            storage = cls._unsynced_storages[filename]
             log.debug('Loaded storage "%s" from memory', name)
         except KeyError:
             if ttl:
@@ -321,6 +277,6 @@ class Storage:
                 os.remove(filename)
                 storage = TimedStorage(filename, file_format, ttl)
 
-            self._unsynced_storages[filename] = storage
+            cls._unsynced_storages[filename] = storage
             log.debug('Loaded storage "%s" from disk', name)
         return storage

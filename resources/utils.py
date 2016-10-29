@@ -23,7 +23,12 @@ PROVIDER_SERVICE_PORT = 5005
 # noinspection PyBroadException
 def check_provider(provider=""):
     magnetic_url = "http://%s:%s" % (str(PROVIDER_SERVICE_HOST), str(PROVIDER_SERVICE_PORT))
-    url = magnetic_url + "?search=general&title=spectre&provider=%s" % provider
+    title = '12%20monkeys'
+    if 'nyaa' in provider:
+        title = 'one%20piece'
+    if 'yts' in provider:
+        title = 'batman%201989'
+    url = magnetic_url + "?search=general&title=%s&provider=%s" % (title, provider)
     results = dict()
     try:
         req = Request(url, None)
@@ -31,7 +36,9 @@ def check_provider(provider=""):
         results = loads(resp)
     except:
         pass
-    return results.get('duration', 'error')
+    duration = results.get('duration', '[COLOR FFC40401]Error[/COLOR]')
+    items = results.get('results', 'zero')
+    return " [%s for %s items]" % (duration, items)
 
 
 def get_list_providers():
@@ -72,7 +79,7 @@ def enable_provider(provider):
                         '"id":1,"params":{"addonid":"%s","enabled":true}}' % provider)
 
 
-# Borrowed from xbmcswift2
+# Borrowed from xbmc swift2
 def get_setting(key, converter=str, choices=None):
     value = ADDON.getSetting(id=key)
     if converter is str:

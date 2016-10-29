@@ -8,24 +8,23 @@ import xbmcaddon
 import xbmcgui
 import xbmcplugin
 
-import resources.storage
 import resources.utils as utils
+from resources.storage import *
 
 base_url = sys.argv[0]
 addon_handle = int(sys.argv[1])
 args = dict(parse_qsl(sys.argv[2][1:]))
 
 listing = []
-storage_info = resources.storage.Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'))
-speed_providers = storage_info["speed"]
+Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'))
+speed_providers = Storage.open("speed")
 
 mode = args.get('mode', '')
 addonid = args.get('addonid', '')
 
 
 def erase():
-    database = storage_info["providers"]
-    database.clear()
+    Storage.open("providers").clear()
 
 
 if mode == 'provider':
@@ -135,8 +134,7 @@ if len(mode) == 0:
                            provider['addonid'])
             menu_check = []
         speed = speed_providers.get(provider['addonid'], '')
-        speed_text = ' [%s]' % speed if speed != '' else ''
-        list_item = xbmcgui.ListItem(label=tag + name_provider + speed_text)
+        list_item = xbmcgui.ListItem(label=tag + name_provider + speed)
         icon = provider["thumbnail"]
         fanart = provider["fanart"]
         list_item.setArt({'thumb': icon,
@@ -167,3 +165,4 @@ if len(mode) == 0:
     xbmcplugin.addDirectoryItems(addon_handle, listing, len(listing))
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
     xbmcplugin.endOfDirectory(addon_handle, updateListing=True)
+del speed_providers

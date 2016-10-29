@@ -55,6 +55,7 @@ class Attribute(dict):
         return data
 
 
+# noinspection PyTypeChecker
 class Root(list):
     """
     A Root instance is the outmost node for a xml/html document.
@@ -287,7 +288,8 @@ class Root(list):
                 for key, values in args:
                     results = []
                     for value in (values if isinstance(values, list) else [values]):
-                        results.append(value != ind.attr[key])
+                        for item in ind.attr[key].split():
+                            results.append(value != item)
                     if all(results):
                         break
                 else:
@@ -356,7 +358,7 @@ class Root(list):
                 else:
                     yield (root, ind)
 
-    def byid(self, id_value):
+    def by_id(self, id_value):
         """
         It is a shortcut for finding an object
         whose attribute 'id' matches id.
@@ -749,6 +751,9 @@ class Root(list):
         self.insert(ind, k)
 
     def parent(self, dom):
+        """
+        Find the parent tag
+        """
         str_item = str(self)
         for i, j in dom.sail_with_root():
             if str(j) == str_item:
@@ -761,9 +766,9 @@ class Root(list):
             class_name = i["class"].replace(" ", ".")
             if len(class_name) > 0:
                 text1 += "." + class_name
-            id = i["id"].replace(" ", "#")
-            if len(id) > 0:
-                text1 += "#" + id
+            id_name = i["id"].replace(" ", "#")
+            if len(id_name) > 0:
+                text1 += "#" + id_name
             if i.name != 1:
                 result.append((text1.strip(), i))
             result.extend(i.list(text1))
@@ -817,7 +822,7 @@ class Tag(Root):
 
         html += '</%s>' % self.name
 
-        return normalize2(html)
+        return normalize_string(html)
 
 
 class Data(Root):
@@ -1131,7 +1136,7 @@ class Html(HTMLParser):
 
     def __init__(self):
         HTMLParser.__init__(self)
-        self.struct = Tree()
+        self.structure = Tree()
 
     def fromfile(self, filename):
         """
@@ -1148,17 +1153,17 @@ class Html(HTMLParser):
 
         """
 
-        self.struct.clear()
-        HTMLParser.feed(self, normalize2(data))
+        self.structure.clear()
+        HTMLParser.feed(self, normalize_string(data))
 
-        return self.struct.outmost
+        return self.structure.outmost
 
     def handle_starttag(self, name, attr):
         """
         When found an opening tag then nest it onto the tree
         """
 
-        self.struct.nest(name, attr)
+        self.structure.nest(name, attr)
         pass
 
     def handle_startendtag(self, name, attr):
@@ -1166,14 +1171,14 @@ class Html(HTMLParser):
         When found a XHTML tag style then nest it up to the tree
         """
 
-        self.struct.xnest(name, attr)
+        self.structure.xnest(name, attr)
 
     def handle_endtag(self, name):
         """
         When found a closing tag then makes it point to the right scope
         """
 
-        self.struct.enclose(name)
+        self.structure.enclose(name)
         pass
 
     def handle_data(self, data):
@@ -1181,49 +1186,49 @@ class Html(HTMLParser):
         Nest data onto the tree.
         """
 
-        self.struct.dnest(data)
+        self.structure.dnest(data)
 
     def handle_decl(self, decl):
         """
 
         """
-        self.struct.ynest(decl)
+        self.structure.ynest(decl)
 
     def unknown_decl(self, decl):
         """
 
         """
-        self.struct.ynest(decl)
+        self.structure.ynest(decl)
 
     def handle_charref(self, data):
         """
 
         """
 
-        self.struct.cnest(data)
+        self.structure.cnest(data)
 
     def handle_entityref(self, data):
         """
 
         """
 
-        self.struct.rnest(data)
+        self.structure.rnest(data)
 
     def handle_pi(self, data):
         """
         """
 
-        self.struct.inest(data)
+        self.structure.inest(data)
 
     def handle_comment(self, data):
         """
 
         """
 
-        self.struct.mnest(data)
+        self.structure.mnest(data)
 
 
-def normalize2(name):
+def normalize_string(name):
     from unicodedata import normalize
     import types
     if types.StringType == type(name):

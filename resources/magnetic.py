@@ -8,14 +8,18 @@ from storage import *
 from utils import *
 
 provider_results = []
+provider_name = []
 available_providers = 0
 request_time = time.clock()
+
+Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'), 60 * 6, True)
 
 
 # provider call back with results
 def process_provider(self):
     global provider_results
     global available_providers
+    global provider_name
     parsed = urlparse.urlparse(self.path)
     addonid = urlparse.parse_qs(parsed.query)['addonid'][0]
     content_length = int(self.headers['Content-Length'])
@@ -23,9 +27,10 @@ def process_provider(self):
     self._write_headers()
     self.wfile.write("OK")
     data = json.loads(payload)
-    logger.log.debug("Provider " + addonid + " returned " + str(len(data)) + " results in " + str(
+    logger.log.info("Provider " + addonid + " returned " + str(len(data)) + " results in " + str(
         "%.1f" % round(time.clock() - request_time, 2)) + " seconds")
     if len(data) > 0:
+        provider_name.remove(addonid)
         if len(provider_results) == 0:
             provider_results = data
         else:
@@ -87,8 +92,8 @@ def get_results(self):
         return json.dumps("Payload Incomplete!!!      ") + payload
 
     # check if the search is in cache
-    storage_info = Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'), 60 * 6, True)
-    database = storage_info["providers"]
+
+    database = Storage.open("providers")
     cache = database.get(payload, None)
 
     if cache is None or not get_setting('use_cache', bool) or len(provider) > 0:
@@ -99,7 +104,7 @@ def get_results(self):
         normalized_list = cache
         display_message_cache()
 
-    logger.log.debug("Filtering returned: " + str(len(normalized_list.get('magnets', []))) + " results")
+    logger.log.info("Filtering returned: " + str(len(normalized_list.get('magnets', []))) + " results")
     return json.dumps(normalized_list)
 
 
@@ -123,7 +128,7 @@ def search(method, payload_json, provider=""):
     if len(addons) == 0:
         # return empty list
         notify("No providers installed", image=get_icon_path())
-        logger.log.debug("No providers installed")
+        logger.log.info("No providers installed")
         return {'results': 0, 'duration': "0 seconds", 'magnets': []}
 
     p_dialog = xbmcgui.DialogProgressBG()
@@ -131,6 +136,7 @@ def search(method, payload_json, provider=""):
 
     for addon in addons:
         available_providers += 1
+        provider_name.append(addon)
         task = Thread(target=run_provider, args=(addon, method, payload_json))
         task.start()
 
@@ -147,13 +153,20 @@ def search(method, payload_json, provider=""):
         message = '%s Providers Left' % available_providers if available_providers > 1 else "1 Provider Left"
         p_dialog.update(int((total - available_providers) / total * 100), message=message)
 
+    # time-out provider
+    if len(provider_name) > 0:
+        message = ', '.join(provider_name).title()
+        message = message.replace('script.magnetic.', '') + ' working slow'
+        logger.log.info(message)
+        notify(message, ADDON_ICON)
+
     # filter magnets and append to results
     filtered_results = dict(magnets=filtering.apply_filters(provider_results))
 
     # append number and time on payload
     filtered_results['results'] = len(filtered_results['magnets'])
     filtered_results['duration'] = str("%.1f" % round(time.clock() - request_time, 2)) + " seconds"
-    logger.log.debug(
+    logger.log.info(
         "Providers search returned: %s results in %s" % (str(len(provider_results)), filtered_results['duration']))
 
     # destroy notification object
