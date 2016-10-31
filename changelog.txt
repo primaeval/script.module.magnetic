@@ -1,3 +1,4 @@
+v0.7.6 better unicode support
 v0.7.5 storage as static class
 v0.7.1 forcing erase cache
 v0.7.0 notification using cache

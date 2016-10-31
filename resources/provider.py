@@ -454,22 +454,20 @@ class Filtering:
             res = True
         return res
 
+    # noinspection PyBroadException
     @staticmethod
-    def normalize(name):
-        if isinstance(name, unicode):
-            return name.encode('utf-8', 'ignore')
-        return name
-
-    @staticmethod
-    def normalize2(name):
+    def normalize_string(name):
         from unicodedata import normalize
         import types
-        if types.StringType == type(name):
-            unicode_name = unicode(name, 'utf-8', 'ignore')
-        else:
-            unicode_name = name
-        normalize_name = normalize('NFKD', unicode_name)
-        return normalize_name.encode('ascii', 'ignore')
+        try:
+            normalize_name = name.decode('unicode-escape').encode('latin-1')
+        except:
+            if types.StringType == type(name):
+                unicode_name = unicode(name, 'utf-8', 'ignore')
+            else:
+                unicode_name = name
+            normalize_name = normalize('NFKD', unicode_name).encode('ascii', 'ignore')
+        return normalize_name
 
     @staticmethod
     def un_code_name(name):  # convert all the &# codes to char, remove extra-space and normalize
@@ -487,10 +485,10 @@ class Filtering:
 
     @classmethod
     def safe_name(cls, value):  # make the name directory and filename safe
-        value = cls.normalize(value)  # First normalization
+        value = cls.normalize_string(value)  # First normalization
         value = cls.unquote_name(value)
         value = cls.un_code_name(value)
-        value = cls.normalize(
+        value = cls.normalize_string(
             value)  # Last normalization, because some unicode char could appear from the previous steps
         value = value.lower().title()
         keys = {'"': ' ', '*': ' ', '/': ' ', ':': ' ', '<': ' ', '>': ' ', '?': ' ', '|': ' ', '_': ' ',
@@ -508,7 +506,7 @@ class Filtering:
             return False
         name = cls.safe_name(name)
         cls.title = cls.safe_name(cls.title) if cls.filter_title in 'true' else name
-        normalized_title = cls.normalize2(cls.title)  # because sometimes there are missing accents in the results
+        normalized_title = cls.normalize_string(cls.title)  # because sometimes there are missing accents in the results
         cls.reason = name.replace(' - ' + Settings.name_provider, '') + ' ***Blocked File by'
         list_to_verify = [cls.title, normalized_title] if cls.title != normalized_title else [cls.title]
         if cls.included(name, list_to_verify, True):

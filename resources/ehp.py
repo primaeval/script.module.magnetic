@@ -1228,12 +1228,16 @@ class Html(HTMLParser):
         self.structure.mnest(data)
 
 
+# noinspection PyBroadException
 def normalize_string(name):
     from unicodedata import normalize
     import types
-    if types.StringType == type(name):
-        unicode_name = unicode(name, 'utf-8', 'ignore')
-    else:
-        unicode_name = name
-    normalize_name = normalize('NFKD', unicode_name)
-    return normalize_name.encode('ascii', 'ignore')
+    try:
+        normalize_name = name.decode('unicode-escape').encode('latin-1')
+    except:
+        if types.StringType == type(name):
+            unicode_name = unicode(name, 'utf-8', 'ignore')
+        else:
+            unicode_name = name
+        normalize_name = normalize('NFKD', unicode_name).encode('ascii', 'ignore')
+    return normalize_name
