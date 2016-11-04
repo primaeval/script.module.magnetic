@@ -1,3 +1,4 @@
+# coding: utf-8
 """
     Taken from xmbcwift2 module
     xbmcswift2.storage

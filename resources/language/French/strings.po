@@ -1,0 +1,229 @@
+# Kodi Media Center language file
+# Addon Name: provider
+# Addon id: script.quasar.provider, provider
+# Addon Provider: mancuniancol
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-09-05 05:53-0400\n"
+"PO-Revision-Date: 2016-11-02 07:18-0400\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.11\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: setting.xml
+msgctxt "#32000"
+msgid "Login"
+msgstr "S'identifier"
+
+#: settings.xml
+msgctxt "#32001"
+msgid "General"
+msgstr "Général"
+
+#: settings.xml
+msgctxt "#32002"
+msgid "TV Shows"
+msgstr "Emissions TV"
+
+#: settings.xml
+msgctxt "#32003"
+msgid "Anime"
+msgstr "Anime"
+
+#: settings.xml
+msgctxt "#32004"
+msgid "Seasons"
+msgstr "Saisons"
+
+#: settings.xml
+msgctxt "#32005"
+msgid "Download"
+msgstr "Téléchargement"
+
+#: settings.xml
+msgctxt "#32006"
+msgid "HTML parsing"
+msgstr "Analyse HTML"
+
+#: setting.xml
+msgctxt "#32015"
+msgid "Username:"
+msgstr "Nom d'utilisateur:"
+
+#: setting.xml
+msgctxt "#32016"
+msgid "Password:"
+msgstr "Mot de passe :"
+
+#: setting.xml
+msgctxt "#32020"
+msgid "URL address (ex:http://www.example.com):"
+msgstr "Adresse de l’URL :"
+
+#: settings.xml
+msgctxt "#32021"
+msgid "Separator between words"
+msgstr "Séparateur entre les mots"
+
+#: settings.xml
+msgctxt "#32022"
+msgid "Query Formats"
+msgstr "Formats de Rechercher"
+
+#: settings.xml
+msgctxt "#32023"
+msgid "Query 1:"
+msgstr "Requête 1:"
+
+#: settings.xml
+msgctxt "#32024"
+msgid "Query 2:"
+msgstr "Requête 2:"
+
+#: settings.xml
+msgctxt "#32025"
+msgid "Query 3:"
+msgstr "Requête 3:"
+
+#: settings.xml
+msgctxt "#32026"
+msgid "Query 4:"
+msgstr "Requête 4:"
+
+#: settings.xml
+msgctxt "#32027"
+msgid "Query 5:"
+msgstr "Requête 5:"
+
+#: settings.xml
+msgctxt "#32028"
+msgid "Keyword Filtering Files"
+msgstr "Mots-clés pour le Filtrage de Fichiers"
+
+#: settings.xml
+msgctxt "#32029"
+msgid "Filter by Title:"
+msgstr "Filtrage par Titre:"
+
+#: settings.xml
+msgctxt "#32030"
+msgid "Only Accept with:"
+msgstr "Seulement Accepter avec:"
+
+#: settings.xml
+msgctxt "#32031"
+msgid "Block with:"
+msgstr "Bloc avec:"
+
+#: settings.xml
+msgctxt "#32032"
+msgid "Limitation Size"
+msgstr "Limitation de Taille"
+
+#: settings.xml
+msgctxt "#32033"
+msgid "Minimum size:"
+msgstr "Taille minimale:"
+
+#: settings.xml
+msgctxt "#32034"
+msgid "Maximum size:"
+msgstr "Taille maximum :"
+
+#: settings.xml
+msgctxt "#32040"
+msgid "Maximum torrents:"
+msgstr "Nombre de torrents:"
+
+#: settings.xml
+msgctxt "#32050"
+msgid "Open subpage to get magnet information:"
+msgstr "Ouvrir subpage pour obtenir des informations de magnet:"
+
+#: settings.xml
+msgctxt "#32051"
+msgid "Rows="
+msgstr "Rangées="
+
+#: settings.xml
+msgctxt "#32052"
+msgid "Name="
+msgstr "Nom:"
+
+#: settings.xml
+msgctxt "#32053"
+msgid "Info Hash="
+msgstr "Info Hash="
+
+#: settings.xml
+msgctxt "#32054"
+msgid "Magnet="
+msgstr "Magnet="
+
+#: settings.xml
+msgctxt "#32055"
+msgid "Size="
+msgstr "Taille"
+
+#: settings.xml
+msgctxt "#32056"
+msgid "Seeds="
+msgstr "Seeds="
+
+#: settings.xml
+msgctxt "#32057"
+msgid "Peers="
+msgstr "Peers="
+
+#: settings.xml
+msgctxt "#32060"
+msgid "No providers installed"
+msgstr "Aucun fournisseur installés"
+
+#: settings.xml
+msgctxt "#32060"
+msgid "Starting..."
+msgstr "Démarrage..."
+
+#: settings.xml
+msgctxt "#32061"
+msgid "%s Providers Left"
+msgstr "% fournisseurs en attente"
+
+#: settings.xml
+msgctxt "#32062"
+msgid "1 Provider Left"
+msgstr "1 fournisseur en attente"
+
+#: settings.xml
+msgctxt "#32063"
+msgid " working slow"
+msgstr "pas vites"
+
+#: settings.xml
+msgctxt "#32070"
+msgid "Search Timeout Seconds"
+msgstr "Temps limite de la recherche en seconds"
+
+#: settings.xml
+msgctxt "#32071"
+msgid "Use Cache"
+msgstr "Utiliser Cache"
+
+#: settings.xml
+msgctxt "#32072"
+msgid "Nettoyer le Cache"
+msgstr ""
+
+#: settings.xml
+msgctxt "#32073"
+msgid "Tier par Qualité"
+msgstr ""

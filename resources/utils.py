@@ -103,6 +103,10 @@ def get_icon_path():
     return os.path.join(addon_path, 'icon.png')
 
 
+def string(id_value):
+    return xbmcaddon.Addon().getLocalizedString(id_value)
+
+
 class Magnet:
     def __init__(self, magnet):
         self.magnet = magnet + '&'
@@ -189,4 +193,3 @@ def display_message_cache():
     xbmc.sleep(250)
     p_dialog.close()
     del p_dialog
-

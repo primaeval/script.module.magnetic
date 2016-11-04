@@ -207,9 +207,20 @@ def clean_size(text=""):
     return text
 
 
+def add_base_url(url=''):
+    if url.startswith('//'):
+        url = 'http:' + url
+    elif url.startswith('/'):
+        if Settings.url.endswith('/'):
+            url = Settings.url + url[1:]
+        else:
+            url = Settings.url + url
+    return url
+
+
 def clean_magnet(magnet="", info_hash=""):
-    if len(magnet) > 0 and magnet[0] == '/':
-        magnet = Settings.url + magnet
+    if len(magnet) > 0:
+        magnet = add_base_url(magnet)
     elif len(magnet) == 0 and len(info_hash) > 0:
         magnet = 'magnet:?xt=urn:btih:%s' % info_hash
     return magnet
@@ -217,12 +228,9 @@ def clean_magnet(magnet="", info_hash=""):
 
 # get the first magnet or torrent from one webpage
 def get_links(page):
-    if page is None:
-        result = ''
-    else:
-        if page[:1] is '/':
-            page = Settings.url + page
-        result = ""
+    result = ''
+    if page is not None:
+        page = add_base_url(page)
         if Browser.open(quote(page).replace("%3A", ":")):
             content = re.findall('magnet:\?[^\'"\s<>\[\]]+', Browser.content)
             if content is not None and len(content) > 0:

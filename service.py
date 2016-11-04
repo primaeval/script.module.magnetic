@@ -1,3 +1,4 @@
+# coding: utf-8
 import threading
 from BaseHTTPServer import BaseHTTPRequestHandler
 from BaseHTTPServer import HTTPServer

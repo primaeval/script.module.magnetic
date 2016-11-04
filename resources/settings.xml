@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <category label="General">
-        <setting id="timeout" label="Search Timeout Seconds" type="slider" default="10" option="int"
-                 range="1,1,60"/>
-        <setting id="use_cache" type="bool" label="Use Cache" default="true"/>
-        <setting label="Clear Cache" type="action" action="RunPlugin(plugin://script.module.magnetic?mode=clear_cache)"/>
+    <category label="32001">
+        <setting id="timeout" label="32070" type="slider" default="10" option="int" range="1,1,60"/>
+        <setting id="use_cache" type="bool" label="32071" default="true"/>
+        <setting label="32072" type="action" action="RunPlugin(plugin://script.module.magnetic?mode=clear_cache)"/>
         <!--<setting id="max_size" label="Maximum Size (GB's)" type="slider" default="6" option="int" range="1,1,15"/>-->
-        <setting id="quality_sort" type="bool" label="Sort By Quality" default="false"/>
+        <setting id="quality_sort" type="bool" label="32073" default="false"/>
     </category>
 </settings>

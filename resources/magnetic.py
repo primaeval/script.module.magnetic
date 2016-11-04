@@ -1,3 +1,4 @@
+# coding: utf-8
 import urlparse
 from threading import Thread
 from urllib import quote_plus, unquote_plus
@@ -98,8 +99,11 @@ def get_results(self):
 
     if cache is None or not get_setting('use_cache', bool) or len(provider) > 0:
         normalized_list = search(method, payload, provider)
-        database[payload] = normalized_list
-        database.sync()
+        results = normalized_list
+        # if there is results it will be saved in cache
+        if len(normalized_list.get('magnets', [])) > 0:
+            database[payload] = results
+            database.sync()
     else:
         normalized_list = cache
         display_message_cache()
@@ -129,12 +133,12 @@ def search(method, payload_json, provider=""):
 
     if len(addons) == 0:
         # return empty list
-        notify("No providers installed", image=get_icon_path())
+        notify(string(32060), image=get_icon_path())
         logger.log.info("No providers installed")
         return {'results': 0, 'duration': "0 seconds", 'magnets': []}
 
     p_dialog = xbmcgui.DialogProgressBG()
-    p_dialog.create('Magnetic Manager', 'Starting...')
+    p_dialog.create('Magnetic Manager', string(32061))
 
     for addon in addons:
         available_providers += 1
@@ -152,13 +156,13 @@ def search(method, payload_json, provider=""):
     # check every 100ms
     while time.clock() - providers_time < time_out and available_providers > 0:
         xbmc.sleep(100)
-        message = '%s Providers Left' % available_providers if available_providers > 1 else "1 Provider Left"
+        message = string(32062) % available_providers if available_providers > 1 else string(32063)
         p_dialog.update(int((total - available_providers) / total * 100), message=message)
 
     # time-out provider
     if len(provider_name) > 0:
         message = ', '.join(provider_name)
-        message = message.replace('script.magnetic.', '').title() + ' working slow'
+        message = message.replace('script.magnetic.', '').title() + string(32064)
         logger.log.info(message)
         notify(message, ADDON_ICON)
 
