@@ -46,7 +46,7 @@ def search(query=""):
     except:
         pass
     items = results.get('magnets', None)
-    if items is None:
+    if items is None or len(items) == 0:
         dialog = xbmcgui.Dialog()
         dialog.ok("Magnetic", string(32075))
         del dialog
