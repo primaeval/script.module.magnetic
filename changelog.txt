@@ -1,3 +1,4 @@
+v0.7.9 some modifications, new library folder
 v0.7.8 Contextual menu support
 v0.7.7 Getlinks and another fixes
 v0.7.6 better unicode support

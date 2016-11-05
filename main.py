@@ -10,9 +10,9 @@ import xbmcaddon
 import xbmcgui
 import xbmcplugin
 
-import resources.utils as utils
-from resources.play import search
-from resources.storage import *
+import resources.lib.utils as utils
+from resources.lib.play import search
+from resources.lib.storage import *
 
 base_url = sys.argv[0]
 addon_handle = int(sys.argv[1])

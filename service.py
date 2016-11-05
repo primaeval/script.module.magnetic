@@ -6,9 +6,9 @@ from SocketServer import ThreadingMixIn
 
 import xbmc
 
-from resources import logger
-from resources import magnetic
-from resources.utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT, ADDON_VERSION
+from resources.lib import logger
+from resources.lib import magnetic
+from resources.lib.utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT, ADDON_VERSION
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):

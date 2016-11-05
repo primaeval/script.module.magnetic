@@ -227,3 +227,13 @@ msgstr ""
 msgctxt "#32073"
 msgid "Add-on to use:"
 msgstr "Tilläg för att använda:"
+
+#: settings.xml
+msgctxt "#32074"
+msgid "Results for %s"
+msgstr ""
+
+#: settings.xml
+msgctxt "#32075"
+msgid "No torrents found"
+msgstr ""

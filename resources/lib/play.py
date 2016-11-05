@@ -6,6 +6,7 @@ import xbmcgui
 
 from dialog_select import DialogSelect
 from provider import *
+from utils import string
 
 ADDON = xbmcaddon.Addon()
 ADDON_PATH = ADDON.getAddonInfo("path")
@@ -47,10 +48,10 @@ def search(query=""):
     items = results.get('magnets', None)
     if items is None:
         dialog = xbmcgui.Dialog()
-        dialog.ok("Magnetic", 'No links')
+        dialog.ok("Magnetic", string(32075))
         del dialog
     else:
-        window = DialogSelect("DialogSelectLarge.xml", ADDON_PATH, "Default", title="Results for %s" % query,
+        window = DialogSelect("DialogSelectLarge.xml", ADDON_PATH, "Default", title=string(32074) % query,
                               items=items)
         window.doModal()
         selection = window.ret

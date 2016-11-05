@@ -227,3 +227,13 @@ msgstr "Nettoyer le Cache"
 msgctxt "#32073"
 msgid "Add-on to use:"
 msgstr "Add-on à utiliser"
+
+#: settings.xml
+msgctxt "#32074"
+msgid "Results for %s"
+msgstr "Résultats de %s"
+
+#: settings.xml
+msgctxt "#32075"
+msgid "No torrents found"
+msgstr "Pas de torrents"
