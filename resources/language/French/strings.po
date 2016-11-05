@@ -287,3 +287,13 @@ msgstr "Restaurer valeur par défaut"
 msgctxt "#32089"
 msgid "Add-on Settings"
 msgstr "Paramètres Extension"
+
+#: settings.xml
+msgctxt "#32090"
+msgid "ENABLED"
+msgstr "ACTIVÉE"
+
+#: settings.xml
+msgctxt "#32091"
+msgid "DISABLED"
+msgstr "DÉSACTIVÉE"

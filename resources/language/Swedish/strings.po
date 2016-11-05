@@ -237,3 +237,13 @@ msgstr ""
 msgctxt "#32075"
 msgid "No torrents found"
 msgstr ""
+
+#: settings.xml
+msgctxt "#32090"
+msgid "ENABLED"
+msgstr ""
+
+#: settings.xml
+msgctxt "#32091"
+msgid "DISABLED"
+msgstr ""

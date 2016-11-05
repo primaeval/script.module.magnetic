@@ -137,13 +137,13 @@ if len(mode) == 0:
     # creation menu
     for provider in utils.get_list_providers():
         name_provider = provider['name']  # gets name
-        tag = '[B][COLOR FF008542][%s] [/COLOR][/B]' % utils.string(32080).upper()
+        tag = '[B][COLOR FF008542][%s] [/COLOR][/B]' % utils.string(32090)
         menu_check = [(utils.string(32082), 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=check&addonid=%s)' %
                        provider['addonid'])]
         menu_enable = (utils.string(32081), 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=disable&addonid=%s)' %
                        provider['addonid'])
         if not provider['enabled']:
-            tag = '[B][COLOR FFC40401][%s] [/COLOR][/B]' % utils.string(32081).upper()
+            tag = '[B][COLOR FFC40401][%s] [/COLOR][/B]' % utils.string(32091)
             menu_enable = (utils.string(32080), 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=enable&addonid=%s)' %
                            provider['addonid'])
             menu_check = []
