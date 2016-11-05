@@ -42,6 +42,23 @@ def check_provider(provider=""):
     return " [%s for %s items]" % (duration, items)
 
 
+# noinspection PyBroadException
+def check_group_provider():
+    magnetic_url = "http://%s:%s" % (str(PROVIDER_SERVICE_HOST), str(PROVIDER_SERVICE_PORT))
+    title = '12%20monkeys'
+    url = magnetic_url + "?search=general&title=%s" % title
+    results = dict()
+    try:
+        req = Request(url, None)
+        resp = urlopen(req).read()
+        results = loads(resp)
+    except:
+        pass
+    duration = results.get('duration', '[COLOR FFC40401]Error[/COLOR]')
+    items = results.get('results', 'zero')
+    return " [%s for %s items]" % (duration, items)
+
+
 def get_list_providers():
     results = []
     list_providers = loads(xbmc.executeJSONRPC('{"jsonrpc": "2.0", '
@@ -194,4 +211,3 @@ def display_message_cache():
     xbmc.sleep(250)
     p_dialog.close()
     del p_dialog
-

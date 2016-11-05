@@ -95,6 +95,11 @@ elif mode == 'check_all':
     del dialog
     xbmc.executebuiltin("Container.Refresh")
 
+elif mode == 'check_group':
+    erase()
+    message = utils.check_group_provider()
+    xbmcgui.Dialog().ok('Magnetic', 'The enabled providers got %s' % message)
+
 elif mode == 'enable':
     erase()
     utils.enable_provider(addonid)
@@ -132,14 +137,14 @@ if len(mode) == 0:
     # creation menu
     for provider in utils.get_list_providers():
         name_provider = provider['name']  # gets name
-        tag = '[B][COLOR FF008542][ENABLE] [/COLOR][/B]'
-        menu_check = [('Check', 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=check&addonid=%s)' %
+        tag = '[B][COLOR FF008542][%s] [/COLOR][/B]' % utils.string(32080).upper()
+        menu_check = [(utils.string(32082), 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=check&addonid=%s)' %
                        provider['addonid'])]
-        menu_enable = ('Disable', 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=disable&addonid=%s)' %
+        menu_enable = (utils.string(32081), 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=disable&addonid=%s)' %
                        provider['addonid'])
         if not provider['enabled']:
-            tag = '[B][COLOR FFC40401][DISABLE] [/COLOR][/B]'
-            menu_enable = ('Enable', 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=enable&addonid=%s)' %
+            tag = '[B][COLOR FFC40401][%s] [/COLOR][/B]' % utils.string(32081).upper()
+            menu_enable = (utils.string(32080), 'XBMC.RunPlugin(plugin://script.module.magnetic?mode=enable&addonid=%s)' %
                            provider['addonid'])
             menu_check = []
         speed = speed_providers.get(provider['addonid'], '')
@@ -155,19 +160,21 @@ if len(mode) == 0:
             url = ''
         is_folder = False
         list_item.addContextMenuItems(menu_check +
-                                      [('Check All',
+                                      [(utils.string(32083),
                                         'XBMC.RunPlugin(plugin://script.module.magnetic?mode=check_all)'),
+                                       (utils.string(32084),
+                                        'XBMC.RunPlugin(plugin://script.module.magnetic?mode=check_group)'),
                                        menu_enable,
-                                       ('Enable All',
+                                       (utils.string(32085),
                                         'XBMC.RunPlugin(plugin://script.module.magnetic?mode=enable_all)'),
-                                       ('Disable All',
+                                       (utils.string(32086),
                                         'XBMC.RunPlugin(plugin://script.module.magnetic?mode=disable_all)'),
-                                       ('Copy Settings To...',
+                                       (utils.string(32087),
                                         'XBMC.RunPlugin(plugin://script.module.magnetic?mode=copy&addonid=%s)' %
                                         provider['addonid']),
-                                       ('Apply default values',
+                                       (utils.string(32088),
                                         'XBMC.RunPlugin(plugin://script.module.magnetic?mode=defaults_all)'),
-                                       ('Add-on Settings',
+                                       (utils.string(32089),
                                         'XBMC.RunPlugin(plugin://script.module.magnetic?mode=settings)')],
                                       replaceItems=True)
         listing.append((url, list_item, is_folder))

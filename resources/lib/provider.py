@@ -19,6 +19,7 @@ from storage import *
 from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT, PATH_TEMP
 from utils import get_setting, get_int, get_float
 
+TIMEOUT = 8
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36" \
              " (KHTML, like Gecko) Chrome/30.0.1599.66 Safari/537.36"
 Html()
@@ -651,7 +652,7 @@ def process(generator=None, verify_name=True, verify_size=True):
 
     # Wait for all of them to finish
     for x in threads:
-        x.join()
+        x.join(timeout=TIMEOUT)
 
     return Filtering.results
 

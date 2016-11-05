@@ -237,3 +237,53 @@ msgstr "Résultats de %s"
 msgctxt "#32075"
 msgid "No torrents found"
 msgstr "Pas de torrents"
+
+#: settings.xml
+msgctxt "#32080"
+msgid "Enable"
+msgstr "Activer"
+
+#: settings.xml
+msgctxt "#32081"
+msgid "Disable"
+msgstr "Désactiver"
+
+#: settings.xml
+msgctxt "#32082"
+msgid "Check"
+msgstr "Vérifier"
+
+#: settings.xml
+msgctxt "#32083"
+msgid "Check All Individually"
+msgstr "Vérifier tous individuellement"
+
+#: settings.xml
+msgctxt "#32084"
+msgid "Check All as Group"
+msgstr "Vérifier tous comme Group"
+
+#: settings.xml
+msgctxt "#32085"
+msgid "Enable All"
+msgstr "Activer tous"
+
+#: settings.xml
+msgctxt "#32086"
+msgid "Disable All"
+msgstr "Désactiver tous"
+
+#: settings.xml
+msgctxt "#32087"
+msgid "Copy Settings To..."
+msgstr "Copier les paramètres à..."
+
+#: settings.xml
+msgctxt "#32088"
+msgid "Apply default values"
+msgstr "Restaurer valeur par défaut"
+
+#: settings.xml
+msgctxt "#32089"
+msgid "Add-on Settings"
+msgstr "Paramètres Extension"
