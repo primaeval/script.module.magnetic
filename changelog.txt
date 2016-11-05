@@ -1,3 +1,4 @@
+v0.7.8 Contextual menu support
 v0.7.7 Getlinks and another fixes
 v0.7.6 better unicode support
 v0.7.5 storage as static class

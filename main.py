@@ -11,6 +11,7 @@ import xbmcgui
 import xbmcplugin
 
 import resources.utils as utils
+from resources.play import search
 from resources.storage import *
 
 base_url = sys.argv[0]
@@ -23,13 +24,19 @@ speed_providers = Storage.open("speed")
 
 mode = args.get('mode', '')
 addonid = args.get('addonid', '')
+query = args.get('query', '')
 
 
+# functions
 def erase():
     Storage.open("providers").clear()
 
 
-if mode == 'provider':
+# Mode Menu
+if mode == 'search':
+    search(query)
+
+elif mode == 'provider':
     erase()
     xbmcaddon.Addon(addonid).openSettings()
 

@@ -2,22 +2,22 @@
 # This code is based in provider.py from pulsar
 # https://github.com/steeve/plugin.video.pulsar
 
-import json
 import re
 import sys
 import urllib2
 from cookielib import CookieJar, LWPCookieJar
 from os import path
 from time import sleep
-from urllib import unquote_plus, urlencode, quote
+from urllib import unquote_plus, urlencode, quote, quote_plus
 from urlparse import urlparse
 
+import xbmc
 import xbmcaddon
 
 from ehp import *
-from logger import log
+from storage import *
+from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT, PATH_TEMP
 from utils import get_setting, get_int, get_float
-from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36" \
              " (KHTML, like Gecko) Chrome/30.0.1599.66 Safari/537.36"
@@ -65,6 +65,7 @@ class Browser:
     cookies = LWPCookieJar()
     content = None
     status = None
+    headers = dict()
 
     @classmethod
     def create_cookies(cls, payload):
@@ -94,6 +95,7 @@ class Browser:
         try:
             sleep(0.5)  # good spider
             response = opener.open(req)  # send cookies and open url
+            cls.headers = response.headers
             # borrow from provider.py Steeve
             if response.headers.get("Content-Encoding", "") == "gzip":
                 import zlib
@@ -240,6 +242,53 @@ def get_links(page):
                 if content is not None and len(content) > 0:
                     result = 'http' + content[0] + '.torrent'
     return result
+
+
+# noinspection PyBroadException
+def get_playable_link(page):
+    page = normalize_string(page)
+    Storage(xbmc.translatePath(PATH_TEMP))
+    exceptions_list = Storage.open("exceptions")
+    result = page
+    log.debug(result)
+    if 'divxatope' in page:
+        page = page.replace('/descargar/', '/torrent/')
+        result = page
+    is_link = True
+    log.debug(exceptions_list.items())
+    if exceptions_list.has(result):
+        return page
+    if page.startswith("http") and is_link:
+        # exceptions
+        log.debug(result)
+        # download page
+        try:
+            Browser.open(page)
+            data = normalize_string(Browser.content)
+            log.debug(Browser.headers)
+            if 'text/html' in Browser.headers.get("content-type", ""):
+                content = re.findall('magnet:\?[^\'"\s<>\[\]]+', data)
+                if content is not None and len(content) > 0:
+                    result = content[0]
+                else:
+                    content = re.findall('/download\?token=[A-Za-z0-9%]+', data)
+                    if content is not None and len(content) > 0:
+                        result = Settings["url_address"] + content[0]
+                    else:
+                        content = re.findall('/telechargement/[a-z0-9-_.]+', data)  # cpasbien
+                        if content is not None and len(content) > 0:
+                            result = Settings["url_address"] + content[0]
+                        else:
+                            content = re.findall('https?:[^\'"\s<>\[\]]+torrent', data)
+                            if content is not None and len(content) > 0:
+                                result = content[0]
+            else:
+                exceptions_list.add(re.search("^https?://(.*?)/", page).group(1))
+                exceptions_list.sync()
+        except:
+            pass
+    log.info(result)
+    return quote_plus(page)
 
 
 def parse_json(data):

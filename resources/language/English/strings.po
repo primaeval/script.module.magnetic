@@ -209,6 +209,11 @@ msgid " working slow"
 msgstr ""
 
 #: settings.xml
+msgctxt "#32065"
+msgid "Copying from cache"
+msgstr ""
+
+#: settings.xml
 msgctxt "#32070"
 msgid "Search Timeout Seconds"
 msgstr ""
@@ -225,5 +230,5 @@ msgstr ""
 
 #: settings.xml
 msgctxt "#32073"
-msgid "Sort By Quality"
+msgid "Add-on to use:"
 msgstr ""

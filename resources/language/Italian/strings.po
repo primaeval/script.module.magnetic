@@ -225,5 +225,5 @@ msgstr ""
 
 #: settings.xml
 msgctxt "#32073"
-msgid "Sort By Quality"
+msgid "Add-on to use:"
 msgstr ""

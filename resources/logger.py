@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
+
 import xbmc
-from utils import ADDON_ID
+import xbmcaddon
+
+ADDON_ID = xbmcaddon.Addon().getAddonInfo("id")
 
 
 class XBMCHandler(logging.StreamHandler):

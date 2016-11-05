@@ -15,6 +15,7 @@ ADDON_ICON = ADDON.getAddonInfo("icon")
 ADDON_NAME = ADDON.getAddonInfo("name")
 ADDON_VERSION = ADDON.getAddonInfo("version")
 PATH_ADDONS = xbmc.translatePath("special://home/addons/")
+PATH_TEMP = xbmc.translatePath("special://temp")
 # provider service config
 PROVIDER_SERVICE_HOST = "127.0.0.1"
 PROVIDER_SERVICE_PORT = 5005
@@ -183,13 +184,14 @@ def notify(message, image=None):
 
 def display_message_cache():
     p_dialog = xbmcgui.DialogProgressBG()
-    p_dialog.create('Magnetic Manager', 'Starting...')
+    p_dialog.create('Magnetic Manager', string(32061))
     xbmc.sleep(250)
-    p_dialog.update(25, 'Copying from cache')
+    p_dialog.update(25, string(32065))
     xbmc.sleep(250)
-    p_dialog.update(50, 'Copying from cache')
+    p_dialog.update(50, string(32065))
     xbmc.sleep(250)
-    p_dialog.update(75, 'Copying from cache')
+    p_dialog.update(75, string(32065))
     xbmc.sleep(250)
     p_dialog.close()
     del p_dialog
+

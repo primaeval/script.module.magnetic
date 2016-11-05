@@ -4,7 +4,7 @@
         <setting id="timeout" label="32070" type="slider" default="10" option="int" range="1,1,60"/>
         <setting id="use_cache" type="bool" label="32071" default="true"/>
         <setting label="32072" type="action" action="RunPlugin(plugin://script.module.magnetic?mode=clear_cache)"/>
-        <!--<setting id="max_size" label="Maximum Size (GB's)" type="slider" default="6" option="int" range="1,1,15"/>-->
-        <setting id="quality_sort" type="bool" label="32073" default="false"/>
+        <setting label="32073" type="labelenum" id="plugin" default="Torrenter"
+                 values="Quasar|Pulsar|KmediaTorrent|XBMCtorrent|Torrenter|YATP"/>
     </category>
 </settings>

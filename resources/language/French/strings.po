@@ -220,10 +220,10 @@ msgstr "Utiliser Cache"
 
 #: settings.xml
 msgctxt "#32072"
-msgid "Nettoyer le Cache"
-msgstr ""
+msgid "Clear Cache"
+msgstr "Nettoyer le Cache"
 
 #: settings.xml
 msgctxt "#32073"
-msgid "Tier par Qualité"
-msgstr ""
+msgid "Add-on to use:"
+msgstr "Add-on à utiliser"
