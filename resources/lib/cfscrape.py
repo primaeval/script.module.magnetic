@@ -52,7 +52,10 @@ class CloudflareScraper(Session):
         headers["Referer"] = resp.url
 
         try:
-            params["jschl_vc"] = re.search(r'name="jschl_vc" value="(\w+)"', body).group(1)
+            value = re.search(r'name="jschl_vc" value="(\w+)"', body)
+            if value is None:
+                raise
+            params["jschl_vc"] = value.group(1)
             params["pass"] = re.search(r'name="pass" value="(.+?)"', body).group(1)
 
             # Extract the arithmetic operation

@@ -24,7 +24,7 @@ PROVIDER_SERVICE_PORT = 5005
 # noinspection PyBroadException
 def check_provider(provider=""):
     magnetic_url = "http://%s:%s" % (str(PROVIDER_SERVICE_HOST), str(PROVIDER_SERVICE_PORT))
-    title = '12%20monkeys'
+    title = 'simpsons'
     if 'nyaa' in provider:
         title = 'one%20piece'
     if 'yts' in provider:
