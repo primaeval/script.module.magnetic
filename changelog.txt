@@ -1,3 +1,4 @@
+v0.8.5 turn off filtering
 v0.8.0 provider timeout
 v0.7.9 some modifications, new library folder
 v0.7.8 Contextual menu support

@@ -4,7 +4,7 @@ from utils import Magnet
 
 # filter results
 def apply_filters(results_list):
-    results_list = cleanup_results(results_list)
+    # results_list = cleanup_results(results_list)
     return sort_by_quality(results_list)
 
 
