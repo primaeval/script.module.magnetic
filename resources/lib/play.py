@@ -37,7 +37,7 @@ def play(magnet):
 def search(query=""):
     magnetic_url = "http://%s:%s" % (str(PROVIDER_SERVICE_HOST), str(PROVIDER_SERVICE_PORT))
     url = magnetic_url + "?search=general&title=%s" % query.replace(' ', '%20')
-    log.debug(url)
+    logger.log.debug(url)
     results = dict()
     try:
         req = Request(url, None)

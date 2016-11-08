@@ -5,7 +5,6 @@ from os import path
 from re import findall
 from urlparse import parse_qsl
 
-import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcplugin
@@ -19,7 +18,6 @@ addon_handle = int(sys.argv[1])
 args = dict(parse_qsl(sys.argv[2][1:]))
 
 listing = []
-Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'))
 speed_providers = Storage.open("speed")
 
 mode = args.get('mode', '')

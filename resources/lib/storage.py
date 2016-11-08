@@ -16,13 +16,15 @@ import time
 from datetime import timedelta
 
 try:
+    # noinspection PyPep8Naming
     import cPickle as pickle
 except ImportError:
     import pickle
 import shutil
 import collections
 from datetime import datetime
-from logger import log
+import logger
+import xbmc
 
 
 class _PersistentDictMixin(object):
@@ -46,8 +48,8 @@ class _PersistentDictMixin(object):
         self.file_format = file_format  # 'csv', 'json', or 'pickle'
         self.filename = filename
         if flag != 'n' and os.access(filename, os.R_OK):
-            log.debug('Reading %s storage from disk at "%s"',
-                      self.file_format, self.filename)
+            logger.log.debug('Reading %s storage from disk at "%s"',
+                             self.file_format, self.filename)
             file_obj = open(filename, 'rb' if file_format == 'pickle' else 'r')
             with file_obj:
                 self.load(file_obj)
@@ -206,20 +208,16 @@ class TimedStorage(_Storage):
 class Storage:
     _unsynced_storages = {}
     _storage_path = ""
-    _TTL = None
-    _force = False
+
+    def __init__(self):
+        pass
 
     @classmethod
-    def __init__(cls, storage_path="", ttl=60 * 24, force=False):
-        cls._TTL = ttl
-        cls._force = force
+    def open(cls, item="", ttl=60 * 24, force=False, storage_path=xbmc.translatePath("special://temp")):
         cls._storage_path = os.path.join(storage_path, ".storage")
         if not os.path.isdir(cls._storage_path):
             os.makedirs(cls._storage_path)
-
-    @classmethod
-    def open(cls, item):
-        return cls.__get_storage(name=item, ttl=cls._TTL, force=cls._force)
+        return cls.__get_storage(name=item, ttl=ttl, force=force)
 
     @classmethod
     def list_storages(cls):
@@ -264,7 +262,7 @@ class Storage:
             if force:
                 raise KeyError
             storage = cls._unsynced_storages[filename]
-            log.debug('Loaded storage "%s" from memory', name)
+            logger.log.debug('Loaded storage "%s" from memory', name)
         except KeyError:
             if ttl:
                 ttl = timedelta(minutes=ttl)
@@ -274,10 +272,10 @@ class Storage:
             except ValueError:
                 # Thrown when the storage file is corrupted and can't be read.
                 # recreate storage.
-                log.info('Error storage "%s" from disk', name)
+                logger.log.info('Error storage "%s" from disk', name)
                 os.remove(filename)
                 storage = TimedStorage(filename, file_format, ttl)
 
             cls._unsynced_storages[filename] = storage
-            log.debug('Loaded storage "%s" from disk', name)
+            logger.log.debug('Loaded storage "%s" from disk', name)
         return storage

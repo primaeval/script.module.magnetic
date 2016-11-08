@@ -11,12 +11,11 @@ from time import sleep
 from urllib import unquote_plus, urlencode, quote, quote_plus
 from urlparse import urlparse
 
-import xbmc
 import xbmcaddon
 
 from ehp import *
 from storage import *
-from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT, PATH_TEMP
+from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
 from utils import get_setting, get_int, get_float
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36" \
@@ -50,7 +49,7 @@ def register(search, search_movie, search_episode, search_season):
 
     except:
         results = json.dumps([])
-        log.error("Addon threw error:" + str(addonid))
+        logger.log.error("Addon threw error:" + str(addonid))
 
     request_url = urllib2.Request(callback, results)
     urllib2.urlopen(request_url, timeout=60)
@@ -79,7 +78,7 @@ class Browser:
             post_data = {}
         if get_data is not None:
             url += '?' + urlencode(get_data)
-        log.debug(url)
+        logger.log.debug(url)
         result = True
         if len(post_data) > 0:
             cls.create_cookies(post_data)
@@ -104,11 +103,11 @@ class Browser:
                 cls.content = response.read()
             response.close()
             cls.status = 200
-            log.debug("Status: " + str(cls.status))
-            log.debug(cls.content)
+            logger.log.debug("Status: " + str(cls.status))
+            logger.log.debug(cls.content)
         except urllib2.HTTPError as e:
             cls.status = e.code
-            log.warning("Status: " + str(cls.status))
+            logger.log.warning("Status: " + str(cls.status))
             result = False
             if e.code == 503:
                 # trying to open with antibots tool
@@ -117,11 +116,11 @@ class Browser:
                 scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
                 cls.content = scraper.get(url).content
                 cls.status = 200
-                log.warning("Trying antibot's messure")
+                logger.log.warning("Trying antibot's messure")
                 result = True
         except urllib2.URLError as e:
             cls.status = e.reason
-            log.warning("Status: " + str(cls.status))
+            logger.log.warning("Status: " + str(cls.status))
             result = False
         return result
 
@@ -247,25 +246,24 @@ def get_links(page):
 # noinspection PyBroadException
 def get_playable_link(page):
     page = normalize_string(page)
-    Storage(xbmc.translatePath(PATH_TEMP))
     exceptions_list = Storage.open("exceptions")
     result = page
-    log.debug(result)
+    logger.log.debug(result)
     if 'divxatope' in page:
         page = page.replace('/descargar/', '/torrent/')
         result = page
     is_link = True
-    log.debug(exceptions_list.items())
+    logger.log.debug(exceptions_list.items())
     if exceptions_list.has(result):
         return page
     if page.startswith("http") and is_link:
         # exceptions
-        log.debug(result)
+        logger.log.debug(result)
         # download page
         try:
             Browser.open(page)
             data = normalize_string(Browser.content)
-            log.debug(Browser.headers)
+            logger.log.debug(Browser.headers)
             if 'text/html' in Browser.headers.get("content-type", ""):
                 content = re.findall('magnet:\?[^\'"\s<>\[\]]+', data)
                 if content is not None and len(content) > 0:
@@ -287,7 +285,7 @@ def get_playable_link(page):
                 exceptions_list.sync()
         except:
             pass
-    log.info(result)
+    logger.log.info(result)
     return quote_plus(page)
 
 
@@ -473,10 +471,10 @@ class Filtering:
 
     @classmethod
     def information(cls):
-        log.debug('Accepted Keywords: %s' % cls.quality_allow)
-        log.debug('Blocked Keywords: %s' % cls.quality_deny)
-        log.debug('min Size: %s' % str(cls.min_size) + ' GB')
-        log.debug('max Size: %s' % ((str(cls.max_size) + ' GB') if cls.max_size != 10 else 'MAX'))
+        logger.log.debug('Accepted Keywords: %s' % cls.quality_allow)
+        logger.log.debug('Blocked Keywords: %s' % cls.quality_deny)
+        logger.log.debug('min Size: %s' % str(cls.min_size) + ' GB')
+        logger.log.debug('max Size: %s' % ((str(cls.max_size) + ' GB') if cls.max_size != 10 else 'MAX'))
 
     # validate keywords
     @staticmethod
@@ -614,7 +612,7 @@ def generate_payload(generator=None, verify_name=True, verify_size=True):
         magnet = clean_magnet(magnet, info_hash)
         v_name = name if verify_name else Filtering.title
         v_size = size if verify_size else None
-        log.debug("name: %s \n info_hash: %s\n magnet: %s\n size: %s\n seeds: %s\n peers: %s" % (
+        logger.log.debug("name: %s \n info_hash: %s\n magnet: %s\n size: %s\n seeds: %s\n peers: %s" % (
             name, info_hash, magnet, size, seeds, peers))
         if Filtering.verify(v_name, v_size):
             cont += 1
@@ -633,8 +631,8 @@ def generate_payload(generator=None, verify_name=True, verify_size=True):
             if cont >= Settings["max_magnets"]:  # limit magnets
                 break
         else:
-            log.debug(Filtering.reason)
-    log.debug('>>>>>>' + str(cont) + ' torrents sent to Magnetic<<<<<<<')
+            logger.log.debug(Filtering.reason)
+    logger.log.debug('>>>>>>' + str(cont) + ' torrents sent to Magnetic<<<<<<<')
     return results
 
 
@@ -664,7 +662,7 @@ def execute_process(generator=None, verify_name=True, verify_size=True):
             if 'title' in keyword:
                 if ':' in keyword:
                     keys = keyword.split(':')
-                    log.debug(Filtering.info)
+                    logger.log.debug(Filtering.info)
                     title = translator(Filtering.info['title'], Filtering.info.get('imdb_id', ''), keys[1], False)
                 else:
                     title = Filtering.info["title"].encode('utf-8')
@@ -695,9 +693,9 @@ def execute_process(generator=None, verify_name=True, verify_size=True):
                     payload[key] = Filtering.post_data[key].replace('QUERY', query)
                 else:
                     payload[key] = Filtering.post_data[key]
-            log.debug(query)
-            log.debug(Filtering.post_data)
-            log.debug(payload)
+            logger.log.debug(query)
+            logger.log.debug(Filtering.post_data)
+            logger.log.debug(payload)
             # creating the payload for Get Method
             data = None
             if Filtering.get_data is not None:
@@ -708,6 +706,6 @@ def execute_process(generator=None, verify_name=True, verify_size=True):
                     else:
                         data[key] = Filtering.get_data[key]
             Filtering.title = query  # to do filtering by name
-            log.debug(url_search)
+            logger.log.debug(url_search)
             Browser.open(url_search, post_data=payload, get_data=data)
             Filtering.results.extend(generate_payload(generator(Browser.content), verify_name, verify_size))

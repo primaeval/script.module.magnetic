@@ -4,7 +4,6 @@ from threading import Thread
 from urllib import quote_plus, unquote_plus
 
 import filtering
-import logger
 from storage import *
 from utils import *
 
@@ -12,8 +11,6 @@ provider_results = []
 provider_name = []
 available_providers = 0
 request_time = time.clock()
-
-Storage(xbmc.translatePath('special://profile/addon_data/script.module.magnetic/'), 60 * 6, True)
 
 
 # provider call back with results
@@ -93,8 +90,7 @@ def get_results(self):
         return json.dumps("Payload Incomplete!!!      ") + payload
 
     # check if the search is in cache
-
-    database = Storage.open("providers")
+    database = Storage.open("providers", 60 * 6, True)
     cache = database.get(payload, None)
 
     if cache is None or not get_setting('use_cache', bool) or len(provider) > 0:
