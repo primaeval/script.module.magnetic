@@ -1,3 +1,4 @@
+v0.8.8 notification browser
 v0.8.7 mod storage class
 v0.8.6 changing default query value
 v0.8.5 turn off filtering

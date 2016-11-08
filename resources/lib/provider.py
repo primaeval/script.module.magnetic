@@ -16,7 +16,7 @@ import xbmcaddon
 from ehp import *
 from storage import *
 from utils import PROVIDER_SERVICE_HOST, PROVIDER_SERVICE_PORT
-from utils import get_setting, get_int, get_float
+from utils import get_setting, get_int, get_float, notify
 
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36" \
              " (KHTML, like Gecko) Chrome/30.0.1599.66 Safari/537.36"
@@ -116,11 +116,14 @@ class Browser:
                 scraper = cfscrape.create_scraper()  # returns a CloudflareScraper instance
                 cls.content = scraper.get(url).content
                 cls.status = 200
-                logger.log.warning("Trying antibot's messure")
+                notify("Antibot's  measure for %s" % url)
+                logger.log.warning("Trying antibot's measure")
                 result = True
         except urllib2.URLError as e:
             cls.status = e.reason
             logger.log.warning("Status: " + str(cls.status))
+            if '[Errno 1]' in cls.status:
+                notify('obsolete Kodi version to open %s' % url)
             result = False
         return result
 
