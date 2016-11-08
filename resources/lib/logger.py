@@ -5,8 +5,6 @@ import logging
 import xbmc
 import xbmcaddon
 
-ADDON_ID = xbmcaddon.Addon().getAddonInfo("id")
-
 
 class XBMCHandler(logging.StreamHandler):
     xbmc_levels = {
@@ -23,7 +21,7 @@ class XBMCHandler(logging.StreamHandler):
 
 
 def _get_logger():
-    logger = logging.getLogger(ADDON_ID)
+    logger = logging.getLogger(xbmcaddon.Addon().getAddonInfo("id"))
     logger.setLevel(logging.DEBUG)
     handler = XBMCHandler()
     handler.setFormatter(logging.Formatter('[%(name)s] %(message)s'))

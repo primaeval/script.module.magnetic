@@ -25,6 +25,7 @@ def cleanup_results(results_list):
             result['hash'] = Magnet(result['uri']).info_hash.upper()
 
             # remove dupes
+            # noinspection PyTypeChecker
             if len([item for item in filtered_list if item['hash'].upper() == result['hash'].upper()]) == 0:
                 # append item to results
                 filtered_list.append(result)
