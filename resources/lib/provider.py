@@ -539,7 +539,7 @@ class Filtering:
     def unquote_name(name):  # convert all %symbols to char
         from urllib import unquote
 
-        return unquote(name).decode("utf-8")
+        return unquote(name)
 
     @classmethod
     def safe_name(cls, value):  # make the name directory and filename safe
