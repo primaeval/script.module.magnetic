@@ -27,12 +27,7 @@ def process_provider(self):
     data = json.loads(payload)
     logger.log.info("Provider " + addonid + " returned " + str(len(data)) + " results in " + str(
         "%.1f" % round(time.clock() - request_time, 2)) + " seconds")
-    if len(data) > 0:
-        if len(provider_results) == 0:
-            provider_results = data
-        else:
-            for item in data:
-                provider_results.append(item)
+    provider_results.extend(data)
     available_providers -= 1
     provider_name.remove(addonid)
 
