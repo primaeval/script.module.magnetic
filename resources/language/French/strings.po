@@ -156,7 +156,7 @@ msgstr "Rangées="
 #: settings.xml
 msgctxt "#32052"
 msgid "Name="
-msgstr "Nom:"
+msgstr "Nom="
 
 #: settings.xml
 msgctxt "#32053"
