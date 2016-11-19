@@ -294,7 +294,7 @@ class Root(list):
                         break
                 else:
                     cm += 1
-                    if cm >= start and cm % every == 0:
+                    if cm >= start and (cm - start) % every == 0:
                         yield (ind)
 
     def find_once(self, tag=None, select=None, order=1):
