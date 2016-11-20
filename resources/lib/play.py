@@ -2,7 +2,8 @@
 from json import loads
 from urllib2 import Request, urlopen
 
-import xbmcgui
+import xbmcgui,xbmcplugin
+import sys
 
 from dialog_select import DialogSelect
 from provider import *
@@ -35,6 +36,9 @@ def play(magnet):
 
 # noinspection PyBroadException,PyTypeChecker
 def search(query=""):
+    handle = int(sys.argv[1])
+    if handle > -1:
+        xbmcplugin.endOfDirectory(handle, True, False, False)
     magnetic_url = "http://%s:%s" % (str(PROVIDER_SERVICE_HOST), str(PROVIDER_SERVICE_PORT))
     url = magnetic_url + "?search=general&title=%s" % query.replace(' ', '%20')
     logger.log.debug(url)
